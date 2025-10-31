@@ -1,0 +1,3 @@
+include:
+  - "${CONFIGS_DIR}/model/cpet_former_center_film.yaml"
+  - "${CONFIGS_DIR}/common/eval/all.yaml"

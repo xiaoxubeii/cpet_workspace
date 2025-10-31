@@ -1,0 +1,7 @@
+# Experiment A2: LightGBM - Base Configuration
+# 实验A2：LightGBM - 基础配置
+
+include:
+  - "${CONFIGS_DIR}/model/lightgbm.yaml"
+  - "${CONFIGS_DIR}/common/eval/early.yaml"
+  - "./base.yaml"

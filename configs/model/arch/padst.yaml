@@ -1,0 +1,12 @@
+include:
+  - "${CONFIGS_DIR}/base/cpa_former.yaml"
+
+model:
+  name: "phase_dual_stream_transformer"
+  fusion_dim: 256
+
+target_columns:
+  - VO2_kg_at_AT
+
+device: cuda
+validation_frequency: 1

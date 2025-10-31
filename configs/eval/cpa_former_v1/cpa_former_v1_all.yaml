@@ -1,0 +1,6 @@
+include:
+  - "${CONFIGS_DIR}/model/cpa_former_v1.yaml"
+  - "${CONFIGS_DIR}/common/eval/all.yaml"
+
+model:
+  head_selection_mode: "dominant_phase"

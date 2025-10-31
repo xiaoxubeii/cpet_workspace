@@ -1,0 +1,11 @@
+include:
+  - "${CONFIGS_DIR}/common/eval/base.yaml"
+
+exp_name: mix
+test_filter_conditions:
+  stage_filter:
+    stage_percentage_by_stage:
+      0: 100
+      1: 100
+      2: 50
+    percentage_selection_mode: first

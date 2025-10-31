@@ -1,0 +1,13 @@
+include:
+  - "./cpet_former.yaml"
+  - "./base.yaml"
+
+model:
+  name: "cpet_former_center_film"
+  num_centers: 3
+  center_embed_dim: 8
+  center_activation: "sigmoid"
+  center_dropout: 0.1
+
+center_columns:
+  - Institute_Name

@@ -1,0 +1,9 @@
+include:
+  - "${CONFIGS_DIR}/model/cpa_former_v2.yaml"
+
+model:
+  name: "cpa_former_v2"
+  n_layers: 6
+  d_model: 320
+  n_heads: 8
+  d_ff: 1280

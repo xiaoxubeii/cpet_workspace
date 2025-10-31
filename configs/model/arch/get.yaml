@@ -1,0 +1,13 @@
+include:
+  - "${CONFIGS_DIR}/base/cpa_former.yaml"
+
+model:
+  name: "graph_enhanced_transformer"
+  graph_dropout: 0.15
+  graph_symmetric: true
+
+target_columns:
+  - VO2_kg_at_AT
+
+device: cuda
+validation_frequency: 1

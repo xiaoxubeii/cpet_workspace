@@ -1,0 +1,35 @@
+include:
+  - "./cpa_former.yaml"
+  - "./base.yaml"
+
+learning_rate: 1e-5
+weight_decay: 1e-5
+
+scheduler:
+  name: "cosine_with_warmup"
+  warmup_epochs: 5
+  min_lr: 1e-6
+
+relative_loss_weight: 0.1
+relative_loss_epsilon: 1e-3
+
+use_curriculum_learning: true
+curriculum_epoch_threshold: 20
+
+model:
+  name: "cpa_former_center_film"
+  num_phases: 3
+  num_centers: 3
+  center_embed_dim: 32
+  center_activation: "sigmoid"
+  center_dropout: 0.1
+  head_selection_mode: "learned_selection"
+  use_learned_selection: true
+
+validation_frequency: 1
+
+target_columns:
+  - VO2_kg_at_AT
+
+center_columns:
+  - Institute_Name

@@ -1,0 +1,63 @@
+# Base Configuration for CPET Models
+# 基础配置文件 - 包含所有 CPET 模型的通用配置
+
+include:
+  - "./center_mapping.yaml"
+
+# ====================================
+# Task Configuration (任务配置)
+# ====================================
+dataset_name: "cpet"                           
+
+# ====================================
+# Experiment Configuration (实验配置)
+# ====================================
+use_swanlab: true                        # 是否使用 SwanLab 日志记录
+project: "vox_cpet"                      # SwanLab 项目名称
+save_dir: null
+checkpoints_path: null
+data_file_path: null                     # 数据文件路径 (必填)
+test_only: false                         # 是否仅进行测试
+
+# ====================================
+# Training Hyperparameters (训练超参数)
+# ====================================
+learning_rate: 0.05                      
+weight_decay: 1e-6                       
+num_epochs: 50                           
+batch_size: 16                           
+grad_clip_max_norm: 0.5                  
+validation_frequency: 10                
+
+features_group: "timeseries"          # 时间序列数据组名
+target_group: "summary"                 # 目标数据组名
+
+max_seq_len: 128                       
+                                      
+# ====================================
+# Advanced Configuration (高级配置)
+# ====================================
+device: "cuda"                           
+mixed_precision: true                  # CPU 环境下关闭混合精度
+compile_model: true                     # CPU 环境下禁用编译优化                    
+
+# 早停配置
+early_stopping:
+  enabled: true                         
+  patience: 15                          
+  min_delta: 1e-6                       
+
+# 模型检查点
+checkpointing:
+  save_best_only: true
+  monitor: "val_loss"
+  mode: "min"
+  save_frequency: "epoch"
+
+# ====================================
+# Logging Configuration (日志配置)
+# ====================================
+logging:
+  log_level: "INFO"
+  log_to_file: true
+  log_dir: "logs"

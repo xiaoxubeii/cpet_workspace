@@ -1,0 +1,7 @@
+# Experiment A2: Ridge Regression - Base Configuration
+# 实验A2：Ridge 回归 - 基础配置
+
+include:
+  - "${CONFIGS_DIR}/model/ridge.yaml"
+  - "${CONFIGS_DIR}/common/eval/mix.yaml"
+  - "./base.yaml"

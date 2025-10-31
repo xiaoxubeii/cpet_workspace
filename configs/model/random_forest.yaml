@@ -1,0 +1,9 @@
+# Random Forest VO2@AT Prediction Configuration  
+# Random Forest VO2@AT 预测配置文件
+
+# ====================================
+# Include Configurations (引入配置)
+# ====================================
+include:
+  - "${CONFIGS_DIR}/base/random_forest.yaml"
+  - "./base.yaml"

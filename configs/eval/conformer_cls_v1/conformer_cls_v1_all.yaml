@@ -1,0 +1,3 @@
+include:
+  - "${CONFIGS_DIR}/model/conformer_cls_v1.yaml"
+  - "${CONFIGS_DIR}/common/eval/all.yaml"

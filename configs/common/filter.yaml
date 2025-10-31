@@ -1,0 +1,31 @@
+# Data Filter Configuration
+# 数据过滤配置文件 - 定义数据预处理和过滤策略
+
+# ====================================
+# 通用过滤条件 (Common Filter Conditions)
+# ====================================
+# 默认应用于所有数据集分片（训练集、验证集、测试集）
+# 可以通过下面的分片特异性过滤条件进行覆盖
+filter_conditions:
+
+# ====================================
+# 测试集专用过滤条件 (Test-specific Filter Conditions)
+# ====================================
+# 支持对测试集应用不同的过滤策略，可以覆盖上述的通用过滤条件
+# 如果未指定，则使用上述的通用过滤条件
+test_filter_conditions:
+  
+# ====================================
+# 验证集专用过滤条件 (Validation-specific Filter Conditions) 
+# ====================================
+# 支持对验证集应用不同的过滤策略
+validation_filter_conditions:
+  
+# ====================================
+# 过滤策略配置 (Filter Strategy Configuration)
+# ====================================
+filter_strategy:
+  # 过滤顺序：定义多个过滤条件的应用顺序
+  filter_order:
+    - "hr_max_ratio"
+    - "load_phase_filter"              

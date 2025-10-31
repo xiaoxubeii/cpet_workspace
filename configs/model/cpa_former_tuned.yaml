@@ -1,0 +1,14 @@
+include:
+  - "./cpa_former.yaml"
+  - "./base.yaml"
+
+use_curriculum_learning: true
+curriculum_strategy: phase_progression
+curriculum_epoch_threshold: 12
+early_phases: [0, 1]
+all_phases: [0, 1, 2]
+
+model:
+  head_selection_mode: "weighted_ensemble"
+  use_learned_selection: true
+  num_phases: 3

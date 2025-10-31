@@ -1,0 +1,12 @@
+include:
+  - "${CONFIGS_DIR}/base/cpa_former.yaml"
+
+model:
+  name: "physio_guided_transformer"
+  kinetics_hidden: 256
+
+target_columns:
+  - VO2_kg_at_AT
+
+device: cuda
+validation_frequency: 1

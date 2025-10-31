@@ -1,0 +1,7 @@
+# Experiment A2: CPAFormer - Base Configuration
+# 实验A2：CPAFormer - 基础配置
+
+include:
+  - "${CONFIGS_DIR}/model/cpa_former.yaml"
+  - "${CONFIGS_DIR}/common/eval/late.yaml"
+  - "./base.yaml"

@@ -1,0 +1,6 @@
+# Evaluation entry for tuned CPAFormer
+
+include:
+  - "${CONFIGS_DIR}/model/cpa_former_tuned.yaml"
+  - "${CONFIGS_DIR}/common/eval/all.yaml"
+  - "./base.yaml"

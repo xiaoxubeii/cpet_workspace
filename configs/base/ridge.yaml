@@ -1,0 +1,86 @@
+# Ridge Regression VO2@AT Prediction Configuration
+# Ridge 回归 VO2@AT 预测配置文件
+
+# ====================================
+# Include Common Configurations (引入公共配置)
+# ====================================
+include:
+  - "${CONFIGS_DIR}/common/base.yaml"
+  - "${CONFIGS_DIR}/common/cpet_features.yaml"
+  - "${CONFIGS_DIR}/common/filter.yaml"
+  - "${CONFIGS_DIR}/base/base.yaml"
+
+# ====================================
+# Ridge 特定的训练超参数覆盖
+# ====================================
+learning_rate: 0.01                      # 仅用于兼容性，Ridge不使用
+
+# ====================================
+# Ridge 特定的标准化配置
+# ====================================
+scaler_config:
+  enable_feature_scaling: false           # 启用特征标准化 (Ridge对标准化敏感)
+  enable_target_scaling: false          # 禁用目标标准化 (保持原始目标值)
+  feature_scaler_type: "standard"       # 使用标准化
+  target_scaler_type: "standard"        # 未使用，但保留配置
+
+# ====================================
+# Ridge 特定的早停配置 (不适用，但保留兼容性)
+# ====================================
+early_stopping:
+  enabled: false                        # Ridge不支持早停
+  patience: 15                          # 保留兼容性
+  min_delta: 1e-6                       # 保留兼容性
+
+# ====================================
+# Model Configuration (模型配置)
+# ====================================
+model:
+  name: "ridge"
+  
+  # 特征提取配置
+  feature_extraction:
+    statistical: true                   # 提取统计特征 (均值、标准差、最值等)
+    temporal: true                      # 提取时间相关特征 (趋势、变化率等)
+    domain_specific: true               # 提取CPET领域特定特征
+    metadata: true                      # 提取元数据特征 (年龄、性别、体重等)
+  
+  # Ridge 回归参数
+  ridge_params:
+    alpha: 1.0                          # L2正则化强度 (主要超参数)
+    fit_intercept: true                 # 是否拟合截距
+    max_iter: null                      # 最大迭代次数 (null表示使用默认值)
+    tol: 1e-3                          # 优化收敛容忍度
+    solver: "auto"                      # 求解器选择 (auto, svd, cholesky, lsqr, sparse_cg, sag, saga)
+    
+  # 训练配置
+  validation_split: 0.2                 # 验证集比例
+  random_state: 42                      # 随机种子
+
+# ====================================
+# Advanced Configuration (高级配置)
+# ====================================
+device: "cpu"                           # Ridge 使用 CPU
+mixed_precision: false                  # 不支持混合精度
+compile_model: false                    # 不支持模型编译
+
+# ====================================
+# 数据和训练配置
+# ====================================
+data:
+  batch_size: 32                        # 批次大小 (仅用于兼容性)
+  
+train:
+  epochs: 1                             # Ridge是非迭代算法，设置为1
+  optimizer: "ridge"                    # 标识使用Ridge算法
+  
+# ====================================
+# 评估配置
+# ====================================
+metrics:
+  - "mae"                               # 平均绝对误差
+  - "mse"                               # 均方误差
+  - "rmse"                              # 均方根误差
+  - "r2_score"                          # R²得分
+  - "mape"                              # 平均绝对百分比误差
+  - "correlation"                       # 皮尔逊相关系数 

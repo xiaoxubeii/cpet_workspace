@@ -1,0 +1,43 @@
+include:
+  - "${CONFIGS_DIR}/common/base.yaml"
+  - "${CONFIGS_DIR}/common/conformer_cls_features.yaml"
+
+dataset_name: "cpet_sequence_cls_v1"
+time_column: "Time"
+at_time_column: "Time_at_AT"
+center_columns:
+  - "Institute_Name"
+  - "Source_Device"
+min_valid_timesteps: 16
+drop_missing_at: false
+
+# Training hyperparameters tailored for classification
+learning_rate: 2e-4
+weight_decay: 1e-4
+batch_size: 16
+eval_batch_size: 32
+num_epochs: 120
+grad_clip: 1.0
+validation_frequency: 1
+
+# Loss weighting
+lambda_brier: 0.5
+lambda_monotone: 0.1
+use_groupdro: true
+groupdro_eta: 0.05
+groupdro_momentum: 0.1
+
+# Trigger configuration for evaluation
+trigger_threshold: 0.8
+trigger_persistence: 3
+
+model:
+  name: "conformer_cls_v1"
+  d_model: 224
+  num_layers: 8
+  num_heads: 8
+  ff_multiplier: 2.0
+  conv_kernel_size: 23
+  dropout: 0.1
+  center_emb_dim: 32
+  use_conditional_norm: true

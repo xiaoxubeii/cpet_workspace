@@ -1,0 +1,73 @@
+# Random Forest VO2@AT Prediction Configuration
+# Random Forest VO2@AT 预测配置文件
+
+# ====================================
+# Include Common Configurations (引入公共配置)
+# ====================================
+include:
+  - "${CONFIGS_DIR}/common/base.yaml"
+  - "${CONFIGS_DIR}/common/cpet_features.yaml"
+  - "${CONFIGS_DIR}/common/filter.yaml"
+  - "${CONFIGS_DIR}/base/base.yaml"
+
+# ====================================
+# Random Forest 特定的标准化配置
+# ====================================
+scaler_config:
+  enable_feature_scaling: false         # Random Forest 通常受益于特征标准化
+  enable_target_scaling: false          # 禁用目标标准化 (保持原始目标值)
+  feature_scaler_type: "standard"       # 特征标准化类型
+  target_scaler_type: "standard"        # 目标标准化类型
+
+# ====================================
+# Random Forest 特定的早停配置
+# ====================================
+early_stopping:
+  enabled: false                        # 禁用早停 (Random Forest一次性训练)
+  patience: 15                          # 耐心值 (保持与其他模型一致)
+  min_delta: 1e-6                       # 最小改善量
+
+# ====================================
+# Model Configuration (模型配置)
+# ====================================
+model:
+  name: "random_forest"
+  
+  # 特征提取配置
+  feature_extraction:
+    statistical: true                   # 提取统计特征 (均值、标准差、最值等)
+    temporal: true                      # 提取时间相关特征 (趋势、变化率等)
+    domain_specific: true               # 提取CPET领域特定特征
+    metadata: true                      # 提取元数据特征 (年龄、性别、体重等)
+  
+  # Random Forest 参数
+  rf_params:
+    n_estimators: 300                   # 决策树数量 (比LightGBM稍少)
+    max_depth: 20                       # 最大深度 (Random Forest通常需要限制深度)
+    min_samples_split: 5                # 分割内部节点所需的最小样本数
+    min_samples_leaf: 2                 # 叶子节点所需的最小样本数
+    max_features: "sqrt"                # 每次分割考虑的最大特征数
+    bootstrap: true                     # 是否使用自助采样
+    n_jobs: -1                          # 并行作业数 (-1表示使用所有处理器)
+    random_state: 42                    # 随机种子
+    criterion: "squared_error"          # 分割标准 (回归任务)
+    max_samples: null                   # 自助采样的样本数 (null表示所有样本)
+    min_impurity_decrease: 0.0          # 最小不纯度减少量
+    ccp_alpha: 0.0                      # 成本复杂度剪枝参数
+    max_leaf_nodes: null                # 最大叶子节点数
+    min_weight_fraction_leaf: 0.0       # 叶子节点最小权重分数
+    warm_start: false                   # 是否重用前一次调用的解决方案
+    
+  # 网格搜索配置 (用于超参数优化)
+  use_grid_search: true                 # 是否使用网格搜索
+  grid_search_params:
+    n_estimators: [200, 300]            # 减少到2个值 (移除100和500)
+    max_depth: [15, 20, null]           # 减少到3个值 (移除10和25)
+    min_samples_split: [2, 5]           # 减少到2个值 (移除10)
+    min_samples_leaf: [1, 2]            # 减少到2个值 (移除4)
+    max_features: ["sqrt", "log2"]      # 减少到2个值 (移除null)
+    bootstrap: [true]                   # 固定为true (Random Forest的经典设置)
+    
+  # 训练配置
+  validation_split: 0.2                 # 验证集比例
+  random_state: 42                      # 随机种子 

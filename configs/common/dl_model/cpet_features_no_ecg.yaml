@@ -1,0 +1,6 @@
+include:
+  - "../cpet_features_no_ecg.yaml"
+
+feature_columns:
+  - "Institute_Name"
+  - "Source_Device"

@@ -1,0 +1,4 @@
+include:
+  - "${CONFIGS_DIR}/model/arch/tpt.yaml"
+  - "${CONFIGS_DIR}/common/eval/all.yaml"
+  - "./base.yaml"

@@ -1,0 +1,15 @@
+include:
+  - "./cpet_former.yaml"
+  - "./base.yaml"
+
+model:
+  name: "cpet_former_v1"
+  use_groupdro: true
+  groupdro_eta: 0.05
+  groupdro_momentum: 0.1
+  groupdro_min_samples: 1
+  groupdro_temperature: 1.0
+  num_centers: 3
+
+center_columns:
+  - Institute_Name

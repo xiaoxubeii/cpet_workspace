@@ -1,0 +1,71 @@
+# SVR VO2@AT Prediction Configuration
+# SVR VO2@AT 预测配置文件
+
+# ====================================
+# Include Common Configurations (引入公共配置)
+# ====================================
+include:
+  - "${CONFIGS_DIR}/common/base.yaml"
+  - "${CONFIGS_DIR}/common/cpet_features.yaml"
+  - "${CONFIGS_DIR}/common/filter.yaml"
+  - "${CONFIGS_DIR}/base/base.yaml"
+
+# SVR 特定的训练超参数覆盖
+# ====================================
+learning_rate: 0.001                     # 学习率 (SVR不直接使用，但保持一致性)
+num_epochs: 1                            # 训练轮数 (SVR只需一次训练)
+validation_frequency: 1                  # 验证频率
+
+# ====================================
+# SVR 特定的标准化配置
+# ====================================
+scaler_config:
+  enable_feature_scaling: false          # SVR 通常受益于特征标准化
+  enable_target_scaling: false          # 禁用目标标准化 (保持原始目标值)
+  feature_scaler_type: "standard"       # 特征标准化类型
+  target_scaler_type: "standard"        # 目标标准化类型
+
+# ====================================
+# SVR 特定的早停配置
+# ====================================
+early_stopping:
+  enabled: false                        # 禁用早停 (SVR一次性训练)
+  patience: 15                          # 耐心值 (保持与其他模型一致)
+  min_delta: 1e-6                       # 最小改善量
+
+# ====================================
+# Model Configuration (模型配置)
+# ====================================
+model:
+  name: "svr"
+  
+  # 特征提取配置
+  feature_extraction:
+    statistical: true                   # 提取统计特征 (均值、标准差、最值等)
+    temporal: true                      # 提取时间相关特征 (趋势、变化率等)
+    domain_specific: true               # 提取CPET领域特定特征
+    metadata: true                      # 提取元数据特征 (年龄、性别、体重等)
+  
+  # SVR 参数
+  svr_params:
+    kernel: "rbf"                       # 核函数类型 (径向基函数)
+    C: 1.0                              # 正则化参数
+    gamma: "scale"                      # 核函数系数 (scale表示自适应)
+    epsilon: 0.1                        # 容忍区间参数
+    tol: 1e-3                           # 数值容忍度
+    cache_size: 200                     # 核函数缓存大小 (MB)
+    shrinking: true                     # 是否使用收缩启发式
+    verbose: false                      # 是否输出详细信息
+    max_iter: -1                        # 最大迭代次数 (-1表示无限制)
+    
+  # 随机搜索配置 (用于超参数优化) - 优化版本，减少组合数量
+  use_random_search: false               # 是否使用随机搜索
+  random_search_params:
+    C: [1.0, 10.0]                     # 正则化参数候选值 (减少到2个)
+    gamma: ["scale", 0.01]             # 核函数系数候选值 (减少到2个)
+    epsilon: [0.1, 0.2]                # 容忍区间参数候选值 (减少到2个)
+    kernel: ["rbf", "linear"]          # 核函数类型候选值 (减少到2个，保留最常用的)
+    
+  # 训练配置
+  validation_split: 0.2                 # 验证集比例
+  random_state: 42                      # 随机种子

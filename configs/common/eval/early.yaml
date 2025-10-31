@@ -1,0 +1,10 @@
+include:
+  - "${CONFIGS_DIR}/common/eval/base.yaml"
+
+exp_name: early
+test_filter_conditions:
+  load_phase_filter:
+    load_phase_percentages:
+      "1": "100"
+      "2": "50"
+    selection_mode: "tail"

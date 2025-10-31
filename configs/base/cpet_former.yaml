@@ -1,0 +1,40 @@
+# CPETFormer VO2@AT Prediction Configuration  
+# CPETFormer VO2@AT 预测配置文件
+
+# ====================================
+# Include Common Configurations (引入公共配置)
+# ====================================
+include:
+  - "${CONFIGS_DIR}/common/base.yaml"
+  - "${CONFIGS_DIR}/common/cpet_features.yaml"
+  - "${CONFIGS_DIR}/common/filter.yaml"
+  - "${CONFIGS_DIR}/base/base.yaml"
+
+
+# ====================================
+# CPETFormer 特定的训练超参数覆盖 (内存优化)
+# ====================================
+learning_rate: 5e-5                      # 学习率
+batch_size: 64                           
+
+# ====================================
+# CPETFormer 特定的标准化配置
+# ====================================
+scaler_config:
+  enable_feature_scaling: true          # CPETFormer 通常受益于特征标准化
+  enable_target_scaling: true          # 使用目标标准化 
+  feature_scaler_type: "standard"       # 特征标准化类型
+  target_scaler_type: "standard"        # 目标标准化类型
+
+# ====================================
+# Model Configuration (模型配置)
+# ====================================
+model:
+  name: "cpet_former"
+  d_model: 256                          
+  n_heads: 8                            
+  n_layers: 4                        
+  d_ff: 1024                            
+  dropout: 0.1                          
+  max_seq_len: 256                      
+  use_gradient_checkpointing: true      

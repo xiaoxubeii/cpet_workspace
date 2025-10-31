@@ -1,0 +1,19 @@
+# CPETFormer VO2@AT Prediction Configuration  
+# CPETFormer VO2@AT 预测配置文件
+
+# ====================================
+# Include Configurations (引入配置)
+# ====================================
+include:
+  - "${CONFIGS_DIR}/base/cpet_former.yaml"
+  - "./base.yaml"
+
+# Light-touch tuning focused on routing + stability
+validation_frequency: 1
+weight_decay: ${WEIGHT_DECAY:1e-5}
+grad_clip_max_norm: ${GRAD_CLIP_MAX_NORM:1.0}
+
+scheduler:
+  name: "cosine_with_warmup"
+  warmup_epochs: 5
+  min_lr: 1e-6

@@ -1,0 +1,94 @@
+# CPET Features Configuration
+# CPET 特征配置文件 - 定义所有可用的特征列 (已根据 CPET_Standard_v1.4 更新)
+
+# ====================================
+# CPET Feature Columns (CPET 特征列)
+# ====================================
+# 说明：以下特征已根据 CPET_Standard_v1.4 的 standard_name 进行标准化。
+# 移除了标准中未定义的变量 (如 FetO2, DP, SV 等) 以确保一致性。
+feature_columns:
+  # --- 静态特征 (来自 subject_schema) ---
+  - "Age"
+  - "Gender"
+  - "Height_cm"
+  - "Weight_kg"
+
+  # --- 呼吸参数 (来自 timeseries_schema) ---
+  - "VE"
+  - "VT"
+  - "Bf"              # 原为 "RR" (呼吸频率)
+  - "Ti"
+  - "Te"
+  - "Ttot"
+  - "Ti_Ttot_Ratio"   # 原为 "Ti_Ttot" (吸气占空比)
+  - "VT_Ti"           # 平均吸气流速
+  - "BR_pct"          # 原为 "BR" (呼吸储备百分比)
+  - "VD_VT_Ratio"     # 原为 "VD_VT_e" (死腔/潮气量比)
+
+  # --- 气体交换参数 (来自 timeseries_schema) ---
+  - "VO2"
+  - "VO2_kg"          # 原为 "VO2_Kg" (体重校正摄氧量)
+  - "VCO2"
+  - "RER"             # 原为 "RQ" (呼吸交换率)
+  - "PaCO2_est"       # 原为 "PaCO2_e" (估算动脉二氧化碳分压)
+
+  # --- 通气当量 (来自 timeseries_schema) ---
+  - "VE_VO2"
+  - "VE_VCO2"
+
+  # --- 代谢参数 (来自 timeseries_schema) ---
+  - "METS"
+
+  # --- 心血管参数 (来自 timeseries_schema) ---
+  - "HR"
+  - "VO2_HR"          # 氧脉搏
+  - "SpO2"
+  - "BP_Syst"         # 原为 "P_Syst" (收缩压)
+  - "BP_Diast"        # 原为 "P_Diast" (舒张压)
+  - "HRR"             # 心率恢复
+  - "CO"              # 心输出量
+
+  # --- 气体成分 (来自 timeseries_schema) ---
+  - "PetO2"
+  - "PetCO2"
+
+  # --- 功率计 (来自 timeseries_schema) ---
+  - "Power_Load"      # 原为 "Power" (功率负载)
+  - "RPM"             # 原为 "Revolution" (踏频)
+
+  # --- 能量代谢与底物利用 (来自 timeseries_schema) ---
+  - "EE_Total_kcal"   # 原为 "EEtot" (总能量消耗)
+  - "EE_kcal_h"       # 原为 "EEh" (每小时能量消耗)
+  - "EE_kg_kcal_h"    # 原为 "EEkg" (每公斤体重每小时能量消耗)
+  - "Fat_kcal_h"      # 原为 "FAT" (脂肪供能)
+  - "CHO_kcal_h"      # 原为 "CHO" (碳水化合物供能)
+  - "PRO_kcal_h"      # 原为 "PRO" (蛋白质供能)
+  - "Fat_pct"         # 原为 "FAT%" (脂肪供能百分比)
+  - "CHO_pct"         # 原为 "CHO%" (碳水化合物供能百分比)
+  - "PRO_pct"         # 原为 "PRO%" (蛋白质供能百分比)
+
+  # --- ECG 参数 (来自 timeseries_schema) ---
+  - "ST_I"
+  - "ST_II"
+  - "ST_III"
+  - "ST_aVR"
+  - "ST_aVL"
+  - "ST_aVF"
+  - "ST_V1"
+  - "ST_V2"
+  - "ST_V3"
+  - "ST_V4"
+  - "ST_V5"
+  - "ST_V6"
+  - "S_I"
+  - "S_II"
+  - "S_III"
+  - "S_aVR"
+  - "S_aVL"
+  - "S_aVF"
+  - "S_V1"
+  - "S_V2"
+  - "S_V3"
+  - "S_V4"
+  - "S_V5"
+  - "S_V6"

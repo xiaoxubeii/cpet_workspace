@@ -1,0 +1,21 @@
+include:
+  - "./cpet_former.yaml"
+  - "./base.yaml"
+
+model:
+  name: "cpet_former_mtl"
+  primary_target_column: "VO2_kg_at_AT"
+  aux_targets:
+    time_at_at:
+      target_column: "Time_at_AT"
+      loss_weight: 0.25
+    hr_at_at:
+      target_column: "HR_at_AT"
+      loss_weight: 0.25
+
+primary_target_column: "VO2_kg_at_AT"
+
+target_columns:
+  - VO2_kg_at_AT
+  - Time_at_AT
+  - HR_at_AT

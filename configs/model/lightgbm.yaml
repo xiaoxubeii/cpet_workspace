@@ -1,0 +1,9 @@
+# LightGBM VO2@AT Prediction Configuration  
+# LightGBM VO2@AT 预测配置文件
+
+# ====================================
+# Include Configurations (引入配置)
+# ====================================
+include:
+  - "${CONFIGS_DIR}/base/lightgbm.yaml"
+  - "./base.yaml"

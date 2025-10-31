@@ -1,0 +1,25 @@
+# Example configuration for CPAFormerMultiHead model training
+# This shows how to configure the CPAFormerMultiHeadTrainer
+
+include:
+  - "${CONFIGS_DIR}/base/cpa_former.yaml"
+  - "./base.yaml"
+
+  # Light-touch tuning focused on routing + stability
+validation_frequency: 1
+weight_decay: ${WEIGHT_DECAY:1e-5}
+grad_clip_max_norm: ${GRAD_CLIP_MAX_NORM:1.0}
+
+scheduler:
+  name: "cosine_with_warmup"
+  warmup_epochs: 5
+  min_lr: 1e-6
+
+model:
+  head_selection_mode: "learned_selection"
+  use_learned_selection: true
+
+head_loss_weights:
+  phase_0: ${HEAD_LOSS_WEIGHTS_PHASE_0:1.0}
+  phase_1: ${HEAD_LOSS_WEIGHTS_PHASE_1:1.0}
+  phase_2: ${HEAD_LOSS_WEIGHTS_PHASE_2:1.0}

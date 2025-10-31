@@ -1,0 +1,8 @@
+# Global center-index mapping shared by all splits
+# Keep this file as the single source of truth so that train/val/test
+# consistently encode center identifiers.
+center_mapping:
+  Institute_Name:
+    shanxi: 0
+    xuhui: 1
+    zhongshan: 2

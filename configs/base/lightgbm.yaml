@@ -1,0 +1,68 @@
+# LightGBM VO2@AT Prediction Configuration
+# LightGBM VO2@AT 预测配置文件
+
+# ====================================
+# Include Common Configurations (引入公共配置)
+# ====================================
+include:
+  - "${CONFIGS_DIR}/common/base.yaml"
+  - "${CONFIGS_DIR}/common/cpet_features.yaml"
+  - "${CONFIGS_DIR}/common/filter.yaml"
+  - "${CONFIGS_DIR}/base/base.yaml"
+
+# ====================================
+# LightGBM 特定的训练超参数覆盖
+# ====================================
+learning_rate: 0.05                      # LightGBM 学习率
+
+# ====================================
+# LightGBM 特定的标准化配置
+# ====================================
+scaler_config:
+  enable_feature_scaling: false         # 禁用特征标准化 (LightGBM对原始数据效果更好)
+  enable_target_scaling: false          # 禁用目标标准化 (保持原始目标值)
+  feature_scaler_type: "standard"       # 未使用，但保留配置
+  target_scaler_type: "standard"        # 未使用，但保留配置
+
+# ====================================
+# LightGBM 特定的早停配置
+# ====================================
+early_stopping:
+  enabled: true                         # 启用早停 (与Transformer保持一致)
+  patience: 15                          # 耐心值 (与Transformer保持一致)
+  min_delta: 1e-6                       # 最小改善量 (与Transformer保持一致)
+
+# ====================================
+# Model Configuration (模型配置)
+# ====================================
+model:
+  name: "lightgbm"
+  
+  # 特征提取配置
+  feature_extraction:
+    statistical: true                   # 提取统计特征 (均值、标准差、最值等)
+    temporal: true                      # 提取时间相关特征 (趋势、变化率等)
+    domain_specific: true               # 提取CPET领域特定特征
+    metadata: true                      # 提取元数据特征 (年龄、性别、体重等)
+  
+  # LightGBM 参数
+  lightgbm_params:
+    objective: "regression"             # 回归任务
+    metric: ["rmse", "mae"]             # 评估指标
+    boosting_type: "gbdt"               # 梯度提升决策树
+    num_leaves: 31                      # 叶子节点数
+    learning_rate: 0.05                 # 学习率
+    feature_fraction: 0.9               # 特征采样比例
+    bagging_fraction: 0.8               # 样本采样比例
+    bagging_freq: 5                     # 采样频率
+    n_estimators: 500                   # 最大迭代次数 (对应Transformer的500个epoch)
+    reg_alpha: 0.1                      # L1正则化
+    reg_lambda: 0.1                     # L2正则化
+    min_child_samples: 20               # 最小叶子节点样本数
+    min_split_gain: 0.0                 # 最小分割增益
+    verbose: -1                         # 静默模式
+    
+  # 训练配置
+  early_stopping_rounds: 15             # 早停轮数 (对应Transformer的patience=15)
+  validation_split: 0.2                 # 验证集比例
+  random_state: 42                      # 随机种子

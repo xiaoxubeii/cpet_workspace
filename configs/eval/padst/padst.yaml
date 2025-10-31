@@ -1,0 +1,4 @@
+include:
+  - "${CONFIGS_DIR}/model/arch/padst.yaml"
+  - "${CONFIGS_DIR}/common/eval/all.yaml"
+  - "./base.yaml"

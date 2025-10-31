@@ -1,0 +1,6 @@
+include:
+  - "./cpa_former_v2.yaml"
+
+model:
+  freeze_backbone: true
+  pretrained_backbone_path: "${PRETRAINED_BACKBONE_PATH}"

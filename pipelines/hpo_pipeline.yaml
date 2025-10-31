@@ -1,0 +1,325 @@
+metadata:
+  name: "cpetformer_multi_model"
+  vars:
+    RUNS_DIR: "{EXPERIMENT_HOME}/sota"
+    RUN_DIR: "{RUNS_DIR}/{RUN_TS}"
+    BEST_DIR: "{RUNS_DIR}/best"
+    rank_scan_all: "false"
+
+    model_list: "cpet_former_center_film cpet_former_v1"
+    baseline_arch: "cpet_former"
+    subset_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5"
+    full_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset.h5"
+    data_file_loco: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_loco"
+    lr_grid: "1e-4 7e-5 5e-5 3e-5"
+    wd_grid: "0 1e-6 5e-6 1e-5 5e-5"
+    grad_clip_grid: "0.3 0.5 1.0"
+    sprint_epochs: "30"
+    full_epochs: "1000"
+    batch_size: "32"
+    top_k: "3"
+
+    # smoke test
+    # model_list: "cpet_former_center_film cpet_former_v1"
+    # baseline_arch: "cpet_former"
+    # subset_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5"
+    # full_data: "{subset_data}"
+    # data_file_loco: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_loco_small"
+    # lr_grid: "5e-5 3e-5"
+    # wd_grid: "1e-5 5e-5"
+    # grad_clip_grid: "0.5 1"
+    # sprint_epochs: "1"
+    # full_epochs: "1"
+    # batch_size: "8"
+    top_k: "3"
+  envs:
+    PYTHONUNBUFFERED: "1"
+    PYTHONPATH: "{EXPERIMENT_HOME}/src"
+    CPETX_PROJECT_ROOT: "{EXPERIMENT_HOME}"
+
+steps:
+  - id: prepare-multi
+    type: shell
+    description: "Set up multi-model run directory."
+    vars:
+      STEP_DIR: "{RUN_DIR}/prepare"
+    command: |
+      set -e
+      mkdir -p "{STEP_DIR}" "{RUN_DIR}/reports" "{BEST_DIR}"
+      python - <<'PY'
+      import json
+      from datetime import datetime
+      from pathlib import Path
+
+      info = {
+          "model_list": "{model_list}".split(),
+          "baseline_arch": "{baseline_arch}",
+          "subset_data": "{subset_data}",
+          "full_data": "{full_data}",
+          "generated_at": datetime.utcnow().isoformat() + "Z",
+      }
+      out = Path("{STEP_DIR}") / "multi_run_info.json"
+      out.write_text(json.dumps(info, indent=2, ensure_ascii=False), encoding="utf-8")
+      PY
+
+  - id: run-all-models
+    type: shell
+    depends_on: [prepare-multi]
+    description: "Invoke single-model pipeline for each model in the list."
+    vars:
+      STEP_DIR: "{RUN_DIR}/run-all-models"
+    command: |
+      set -e
+      set -o pipefail
+      mkdir -p "{STEP_DIR}/logs"
+      for MODEL in {model_list}; do
+        PIPELINE_NAME="${MODEL}"
+        MODEL_ROOT="{RUN_DIR}/${MODEL}"
+        LOG_FILE="{STEP_DIR}/logs/${MODEL}.log"
+        echo "[multi-model] Launch pipeline for ${MODEL}" | tee "${LOG_FILE}"
+        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx run \
+          --config {EXPERIMENT_HOME}/pipelines/_hpo_pipeline.yaml \
+          --vars model=${MODEL} baseline_arch={baseline_arch} pipeline_name=${PIPELINE_NAME} run_dir=${MODEL_ROOT} subset_data={subset_data} full_data={full_data} data_file_loco={data_file_loco} \
+          --vars lr_grid="{lr_grid}" wd_grid="{wd_grid}" grad_clip_grid="{grad_clip_grid}" sprint_epochs={sprint_epochs} full_epochs={full_epochs} batch_size={batch_size} top_k={top_k} \
+          2>&1 | tee -a "${LOG_FILE}"
+      done
+
+  - id: collect-reports
+    type: shell
+    depends_on: [run-all-models]
+    description: "Gather summary reports from each model pipeline."
+    vars:
+      STEP_DIR: "{RUN_DIR}/collect-reports"
+    command: |
+      set -e
+      mkdir -p "{STEP_DIR}"
+      python - <<'PY'
+      import json
+      import shutil
+      from pathlib import Path
+
+      run_dir = Path("{RUN_DIR}")
+      reports_root = run_dir / "reports"
+      reports_root.mkdir(parents=True, exist_ok=True)
+      summary = []
+
+      for model in "{model_list}".split():
+          model_root = run_dir / model
+          if not model_root.exists():
+              continue
+
+          pipeline_reports = model_root / "reports"
+          entry = {"model": model, "pipeline_dir": str(model_root)}
+          for fname in [
+              "top_full_candidates.json",
+              "best_model.json",
+              "baseline_comparison.json",
+              "baseline_comparison.md",
+          ]:
+              src = pipeline_reports / fname
+              if src.is_file():
+                  dst = reports_root / f"{model}_{fname}"
+                  shutil.copy2(src, dst)
+                  entry[fname] = str(dst)
+          summary.append(entry)
+
+      out_path = reports_root / "multi_model_summary.json"
+      out_path.write_text(json.dumps({"models": summary}, indent=2, ensure_ascii=False), encoding="utf-8")
+      PY
+
+  - id: rank-models
+    type: shell
+    depends_on: [collect-reports]
+    description: "Update global ranking based on latest best-model reports."
+    vars:
+      STEP_DIR: "{RUN_DIR}/rank-models"
+    command: |
+      set -e
+      mkdir -p "{STEP_DIR}"
+      python - <<'PY'
+      import csv
+      import json
+      from datetime import datetime
+      from pathlib import Path
+
+      def score_tuple(entry):
+          def to_float(value, default):
+              try:
+                  return float(value)
+              except (TypeError, ValueError):
+                  return default
+
+          mae = to_float(entry.get("mae"), float("inf"))
+          rmse = to_float(entry.get("rmse"), float("inf"))
+          r2 = entry.get("r2_score")
+          r2_component = -to_float(r2, float("inf")) if r2 is not None else float("inf")
+          return (mae, rmse, r2_component)
+
+      def should_scan_all(value: str) -> bool:
+          return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+      def derive_run_name(path: Path) -> str:
+          parts = list(path.parts)
+          if "sota" in parts:
+              idx = parts.index("sota")
+              if idx + 1 < len(parts):
+                  return parts[idx + 1]
+          return "{RUN_TS}"
+
+      run_dir = Path("{RUN_DIR}")
+      reports_root = run_dir / "reports"
+      step_dir = Path("{STEP_DIR}")
+      best_dir = Path("{BEST_DIR}")
+      timestamp = datetime.utcnow().isoformat() + "Z"
+      scan_all = should_scan_all("{rank_scan_all}")
+
+      reports_root.mkdir(parents=True, exist_ok=True)
+      best_dir.mkdir(parents=True, exist_ok=True)
+
+      sources = []
+      if scan_all:
+          runs_root = Path("{RUNS_DIR}")
+          if runs_root.exists():
+              sources.extend(sorted(runs_root.glob("*/reports/*_best_model.json")))
+              print(sources)
+      else:
+          sources.extend(sorted(reports_root.glob("*_best_model.json")))
+
+      records = []
+      for best_file in sources:
+          try:
+              data = json.loads(best_file.read_text(encoding="utf-8"))
+          except json.JSONDecodeError:
+              continue
+
+          entry = {
+              "model": data.get("arch") or best_file.stem.replace("_best_model", ""),
+              "combo": data.get("combo"),
+              "learning_rate": data.get("learning_rate"),
+              "weight_decay": data.get("weight_decay"),
+              "grad_clip": data.get("grad_clip"),
+              "mae": data.get("mae"),
+              "rmse": data.get("rmse"),
+              "r2_score": data.get("r2_score"),
+              "correlation": data.get("correlation"),
+              "mape": data.get("mape"),
+              "subset_data": "{subset_data}",
+              "full_data": "{full_data}",
+              "sprint_epochs": "{sprint_epochs}",
+              "full_epochs": "{full_epochs}",
+              "source_file": str(best_file),
+              "source_run": derive_run_name(best_file),
+              "generated_at": data.get("generated_at"),
+              "updated_at": timestamp,
+          }
+          records.append(entry)
+
+      ranked_entries = []
+      for rank, entry in enumerate(sorted(records, key=score_tuple), start=1):
+          ranked = dict(entry)
+          ranked["rank"] = rank
+          ranked_entries.append(ranked)
+
+      run_payload = {
+          "generated_at": timestamp,
+          "source_run": "{RUN_TS}",
+          "scan_all": scan_all,
+          "entries": ranked_entries,
+      }
+
+      run_json = step_dir / "model_ranking.json"
+      run_json.write_text(json.dumps(run_payload, indent=2, ensure_ascii=False), encoding="utf-8")
+
+      run_csv = step_dir / "model_ranking.csv"
+      with run_csv.open("w", newline="", encoding="utf-8") as csvfile:
+          writer = csv.writer(csvfile)
+          writer.writerow(["rank", "model", "mae", "rmse", "r2_score", "mape", "correlation", "combo", "learning_rate", "weight_decay", "grad_clip", "subset_data", "full_data", "sprint_epochs", "full_epochs", "source_file", "source_run"])
+          for entry in ranked_entries:
+              writer.writerow([
+                  entry.get("rank"),
+                  entry.get("model"),
+                  entry.get("mae"),
+                  entry.get("rmse"),
+                  entry.get("r2_score"),
+                  entry.get("mape"),
+                  entry.get("correlation"),
+                  entry.get("combo"),
+                  entry.get("learning_rate"),
+                  entry.get("weight_decay"),
+                  entry.get("grad_clip"),
+                  entry.get("subset_data"),
+                  entry.get("full_data"),
+                  entry.get("sprint_epochs"),
+                  entry.get("full_epochs"),
+                  entry.get("source_file"),
+                  entry.get("source_run"),
+              ])
+
+      last_run_path = best_dir / "model_ranking_last_run.json"
+      last_run_path.write_text(json.dumps(run_payload, indent=2, ensure_ascii=False), encoding="utf-8")
+
+      best_path = best_dir / "model_ranking.json"
+      best_data = {}
+      if best_path.exists():
+          try:
+              existing = json.loads(best_path.read_text(encoding="utf-8"))
+              for item in existing.get("entries", []):
+                  model = item.get("model")
+                  if model:
+                      best_data[model] = item
+          except json.JSONDecodeError:
+              pass
+
+      for entry in ranked_entries:
+          model = entry.get("model")
+          if not model:
+              continue
+          candidate = dict(entry)
+          candidate["updated_at"] = timestamp
+          current = best_data.get(model)
+          if current is None or score_tuple(candidate) < score_tuple(current):
+              best_data[model] = candidate
+
+      best_entries = sorted(best_data.values(), key=score_tuple)
+      for idx, item in enumerate(best_entries, start=1):
+          item["rank"] = idx
+
+      best_payload = {
+          "generated_at": timestamp,
+          "entries": best_entries,
+      }
+
+      best_path.write_text(json.dumps(best_payload, indent=2, ensure_ascii=False), encoding="utf-8")
+
+      best_csv = best_dir / "model_ranking.csv"
+      with best_csv.open("w", newline="", encoding="utf-8") as csvfile:
+          writer = csv.writer(csvfile)
+          writer.writerow(["rank", "model", "mae", "rmse", "r2_score", "mape", "correlation", "combo", "learning_rate", "weight_decay", "grad_clip", "subset_data", "full_data", "sprint_epochs", "full_epochs", "source_run", "source_file", "updated_at"])
+          for entry in best_entries:
+              writer.writerow([
+                  entry.get("rank"),
+                  entry.get("model"),
+                  entry.get("mae"),
+                  entry.get("rmse"),
+                  entry.get("r2_score"),
+                  entry.get("mape"),
+                  entry.get("correlation"),
+                  entry.get("combo"),
+                  entry.get("learning_rate"),
+                  entry.get("weight_decay"),
+                  entry.get("grad_clip"),
+                  entry.get("subset_data"),
+                  entry.get("full_data"),
+                  entry.get("sprint_epochs"),
+                  entry.get("full_epochs"),
+                  entry.get("source_run"),
+                  entry.get("source_file"),
+                  entry.get("updated_at"),
+              ])
+
+      for entry in best_entries:
+          model = entry.get("model")
+          if not model:
+              continue
+          (best_dir / f"{model}.json").write_text(json.dumps(entry, indent=2, ensure_ascii=False), encoding="utf-8")
+      PY

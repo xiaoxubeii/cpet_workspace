@@ -1,0 +1,5 @@
+include:
+  - "${CONFIGS_DIR}/common/cpet_features_no_ecg.yaml"
+
+target_columns:
+  - VO2_kg_at_AT

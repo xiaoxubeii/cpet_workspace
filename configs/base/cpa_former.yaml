@@ -1,0 +1,64 @@
+# CPAFormer VO2@AT Prediction Configuration  
+# CPAFormer VO2@AT 预测配置文件
+
+# ====================================
+# Include Common Configurations (引入公共配置)
+# ====================================
+include:
+  - "${CONFIGS_DIR}/common/base.yaml"
+  - "${CONFIGS_DIR}/common/cpet_features.yaml"
+  - "${CONFIGS_DIR}/common/filter.yaml"
+  - "${CONFIGS_DIR}/base/base.yaml"
+
+
+# ====================================
+# CPAFormer 特定的训练超参数覆盖 (内存优化)
+# ====================================
+learning_rate: 5e-5                      # 学习率
+batch_size: 64                           # CPAFormer 由于阶段嵌入，内存使用稍高，减少批次大小
+
+# ====================================
+# CPAFormer 特定的标准化配置
+# ====================================
+scaler_config:
+  enable_feature_scaling: true          # CPAFormer 通常受益于特征标准化
+  enable_target_scaling: true          # 使用目标标准化 
+  feature_scaler_type: "standard"       # 特征标准化类型
+  target_scaler_type: "standard"        # 目标标准化类型
+
+
+# 梯度裁剪设置（对于 Transformer 很重要）
+grad_clip_max_norm: 1.0
+
+# ====================================
+# Model Configuration (模型配置)
+# ====================================
+model:
+  name: "cpa_former"
+  num_phases: 3                         # 阶段数量: 0=pre_load, 1=load, 2=post_load
+  d_model: 256                          
+  n_heads: 8                            
+  n_layers: 4                          
+  d_ff: 1024                            
+  dropout: 0.1                          
+  # max_seq_len: 256                      
+  use_gradient_checkpointing: true      
+  # Multi-head specific parameters
+  head_selection_mode: "all_heads"  # Options: "dominant_phase", "weighted_ensemble", "learned_selection", "all_heads"
+  phase_threshold: 0.5
+  use_phase_specific_heads: false
+  use_learned_selection: false
+
+# Multi-head trainer specific settings
+use_multi_head_loss: true
+head_loss_weights:
+  phase_0: 1.0    # 负载前
+  phase_1: 1.0    # 负载中
+  phase_2: 1.0    # 负载后
+
+# Advanced training strategies
+use_curriculum_learning: false
+curriculum_epoch_threshold: 20
+finetune_heads_only: false  # Set to true for fine-tuning only prediction heads
+# Performance tracking
+accuracy_threshold: 2.0  # ml/kg/min - threshold for "correct" predictions

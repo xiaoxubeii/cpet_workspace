@@ -1,0 +1,7 @@
+include:
+  - "${CONFIGS_DIR}/model/cpa_former_v2.yaml"
+
+model:
+  name: "cpa_former_v2"
+  use_conv_frontend: true
+  conv_kernel: 5

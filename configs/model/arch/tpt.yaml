@@ -1,0 +1,14 @@
+include:
+  - "${CONFIGS_DIR}/base/cpa_former.yaml"
+
+model:
+  name: "temporal_pyramid_transformer"
+  pyramid_kernels: [3, 5, 9]
+  pyramid_channels: 128
+  pyramid_residual: true
+
+target_columns:
+  - VO2_kg_at_AT
+
+device: cuda
+validation_frequency: 1
