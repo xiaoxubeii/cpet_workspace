@@ -7,7 +7,7 @@ import argparse
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable, List, Sequence
+from typing import Iterable, List, Optional, Sequence
 
 import yaml
 
@@ -16,7 +16,9 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _split_values(value: str) -> List[str]:
+def _split_values(value: Optional[str]) -> List[str]:
+    if not value:
+        return []
     return [item for item in value.split() if item]
 
 
@@ -35,15 +37,33 @@ def cmd_write_info(args: argparse.Namespace) -> None:
         "subset_data": args.subset_data,
         "full_data": args.full_data,
         "timestamp": _now_iso(),
-        "lr_grid": _split_values(args.lr_grid),
-        "wd_grid": _split_values(args.wd_grid),
-        "grad_clip_grid": _split_values(args.grad_clip_grid),
         "sprint_epochs": int(args.sprint_epochs),
         "full_epochs": int(args.full_epochs),
         "batch_size": int(args.batch_size),
         "top_k": int(args.top_k),
         "pipeline_parent": str(pipeline_root.parent),
     }
+
+    lr_grid = _split_values(getattr(args, "lr_grid", None))
+    wd_grid = _split_values(getattr(args, "wd_grid", None))
+    grad_clip_grid = _split_values(getattr(args, "grad_clip_grid", None))
+    if lr_grid:
+        info["lr_grid"] = lr_grid
+    if wd_grid:
+        info["wd_grid"] = wd_grid
+    if grad_clip_grid:
+        info["grad_clip_grid"] = grad_clip_grid
+
+    if getattr(args, "hpo_trials", None) is not None:
+        info["hpo_trials"] = int(args.hpo_trials)
+    if getattr(args, "hpo_jobs", None) is not None:
+        info["hpo_jobs"] = int(args.hpo_jobs)
+    if getattr(args, "optuna_seed", None) is not None:
+        info["optuna_seed"] = int(args.optuna_seed)
+
+    robust_seeds = _split_values(getattr(args, "robust_seeds", None))
+    if robust_seeds:
+        info["robust_seeds"] = [int(seed) for seed in robust_seeds]
 
     summary_path = step_dir / "pipeline_info.json"
     summary_path.write_text(json.dumps(info, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -60,6 +80,8 @@ def cmd_write_meta(args: argparse.Namespace) -> None:
         "grad_clip": float(args.grad_clip),
         "stage": args.stage,
     }
+    if getattr(args, "seed", None) is not None:
+        meta["seed"] = int(args.seed)
     (run_root / "meta.json").write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
@@ -344,9 +366,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--baseline-arch", required=True)
     p.add_argument("--subset-data", required=True)
     p.add_argument("--full-data", required=True)
-    p.add_argument("--lr-grid", required=True)
-    p.add_argument("--wd-grid", required=True)
-    p.add_argument("--grad-clip-grid", required=True)
+    p.add_argument("--lr-grid")
+    p.add_argument("--wd-grid")
+    p.add_argument("--grad-clip-grid")
+    p.add_argument("--hpo-trials", type=int)
+    p.add_argument("--hpo-jobs", type=int)
+    p.add_argument("--optuna-seed", type=int)
+    p.add_argument("--robust-seeds")
     p.add_argument("--sprint-epochs", required=True)
     p.add_argument("--full-epochs", required=True)
     p.add_argument("--batch-size", required=True)
@@ -360,6 +386,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--learning-rate", required=True)
     p.add_argument("--weight-decay", required=True)
     p.add_argument("--grad-clip", required=True)
+    p.add_argument("--seed")
     p.add_argument("--stage", required=True)
     p.set_defaults(func=cmd_write_meta)
 

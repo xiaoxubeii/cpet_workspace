@@ -8,12 +8,13 @@ metadata:
 
     model_list: "cpet_former_center_film cpet_former_v1"
     baseline_arch: "cpet_former"
-    subset_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5"
-    full_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset.h5"
-    data_file_loco: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_loco"
-    lr_grid: "1e-4 7e-5 5e-5 3e-5"
-    wd_grid: "0 1e-6 5e-6 1e-5 5e-5"
-    grad_clip_grid: "0.3 0.5 1.0"
+    # subset_data: "{EXPERIMENT_HOME}/artifacts/cpet_dataset/cpet_dataset_small.h5"
+    full_data: "{EXPERIMENT_HOME}/artifacts/cpet_dataset/cpet_dataset.h5"
+    data_file_loco: "{EXPERIMENT_HOME}/artifacts/cpet_dataset/cpet_dataset_loco"
+    hpo_trials: "100"
+    hpo_jobs: "1"
+    optuna_seed: "42"
+    robust_seeds: "42 101 202 303 404"
     sprint_epochs: "30"
     full_epochs: "1000"
     batch_size: "32"
@@ -25,13 +26,13 @@ metadata:
     # subset_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5"
     # full_data: "{subset_data}"
     # data_file_loco: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_loco_small"
-    # lr_grid: "5e-5 3e-5"
-    # wd_grid: "1e-5 5e-5"
-    # grad_clip_grid: "0.5 1"
+    # hpo_trials: "10"
+    # hpo_jobs: "1"
+    # optuna_seed: "7"
+    # robust_seeds: "42 101"
     # sprint_epochs: "1"
     # full_epochs: "1"
     # batch_size: "8"
-    top_k: "3"
   envs:
     PYTHONUNBUFFERED: "1"
     PYTHONPATH: "{EXPERIMENT_HOME}/src"
@@ -80,7 +81,7 @@ steps:
         PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx run \
           --config {EXPERIMENT_HOME}/pipelines/_hpo_pipeline.yaml \
           --vars model=${MODEL} baseline_arch={baseline_arch} pipeline_name=${PIPELINE_NAME} run_dir=${MODEL_ROOT} subset_data={subset_data} full_data={full_data} data_file_loco={data_file_loco} \
-          --vars lr_grid="{lr_grid}" wd_grid="{wd_grid}" grad_clip_grid="{grad_clip_grid}" sprint_epochs={sprint_epochs} full_epochs={full_epochs} batch_size={batch_size} top_k={top_k} \
+          --vars sprint_epochs={sprint_epochs} full_epochs={full_epochs} batch_size={batch_size} top_k={top_k} hpo_trials={hpo_trials} hpo_jobs={hpo_jobs} optuna_seed={optuna_seed} robust_seeds="{robust_seeds}" \
           2>&1 | tee -a "${LOG_FILE}"
       done
 

@@ -5,9 +5,17 @@ metadata:
     RUN_DIR: "{run_dir}"
     eval_conf_dir: "{CONFIGS_DIR}/eval"
 
-    subset_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5"
-    full_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset.h5"
-    data_file_loco: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_loco"
+    subset_data: "{subset_data}"
+    full_data: "{full_data}"
+    data_file_loco: "{data_file_loco}"
+    hpo_trials: "{hpo_trials}"
+    hpo_jobs: "{hpo_jobs}"
+    optuna_seed: "{optuna_seed}"
+    robust_seeds: "{robust_seeds}"
+    sprint_epochs: "{sprint_epochs}"
+    full_epochs: "{full_epochs}"
+    batch_size: "{batch_size}"
+    top_k: "{top_k}"
   envs:
     PYTHONUNBUFFERED: "1"
     PYTHONPATH: "{EXPERIMENT_HOME}/src"
@@ -31,103 +39,44 @@ steps:
         --baseline-arch "{baseline_arch}" \
         --subset-data "{subset_data}" \
         --full-data "{full_data}" \
-        --lr-grid "{lr_grid}" \
-        --wd-grid "{wd_grid}" \
-        --grad-clip-grid "{grad_clip_grid}" \
         --sprint-epochs "{sprint_epochs}" \
         --full-epochs "{full_epochs}" \
         --batch-size "{batch_size}" \
-        --top-k "{top_k}"
+        --top-k "{top_k}" \
+        --hpo-trials "{hpo_trials}" \
+        --hpo-jobs "{hpo_jobs}" \
+        --optuna-seed "{optuna_seed}" \
+        --robust-seeds "{robust_seeds}"
 
-  - id: sprint-train
+  - id: optuna-search
     type: shell
     depends_on: [prepare-run]
-    description: "Run short training loops across a small hyperparameter grid."
+    description: "Run Optuna/ASHA hyperparameter search."
     vars:
-      STEP_DIR: "{RUN_DIR}/sprint-train"
-    command: |
-      set -e
-      ARCH="{model}"
-      DATA_FILE="{subset_data}"
-      if [ ! -f "${DATA_FILE}" ]; then
-        echo "[sprint-train] subset data ${DATA_FILE} missing, fallback to full dataset."
-        DATA_FILE="{full_data}"
-      fi
-      for LR in {lr_grid}; do
-        for WD in {wd_grid}; do
-          for CLIP in {grad_clip_grid}; do
-            COMBO="lr${LR}_wd${WD}_clip${CLIP}"
-            RUN_ROOT="{STEP_DIR}/${COMBO}"
-            mkdir -p "${RUN_ROOT}/logs" "${RUN_ROOT}/results"
-            echo "[sprint-train] ${ARCH} :: ${COMBO}"
-            WEIGHT_DECAY=${WD} GRAD_CLIP_MAX_NORM=${CLIP} PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
-              --data-file "${DATA_FILE}" \
-              --conf {CONFIGS_DIR}/model \
-              --filter "^${ARCH}$" \
-              --run-dir "${RUN_ROOT}" \
-              --save-dir "${RUN_ROOT}/artifacts" \
-              --log-dir "${RUN_ROOT}/logs" \
-              --task-id "{TASK_ID}_${ARCH}_${COMBO}_sprint" \
-              --num-epochs {sprint_epochs} \
-              --learning-rate "${LR}" \
-              --batch-size {batch_size}
-            PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py write-meta \
-              --run-root "${RUN_ROOT}" \
-              --arch "${ARCH}" \
-              --combo "${COMBO}" \
-              --learning-rate "${LR}" \
-              --weight-decay "${WD}" \
-              --grad-clip "${CLIP}" \
-              --stage "sprint"
-          done
-        done
-      done
-
-  - id: sprint-eval
-    type: shell
-    depends_on: [sprint-train]
-    description: "Evaluate sprint checkpoints."
-    vars:
-      STEP_DIR: "{RUN_DIR}/sprint-eval"
-    command: |
-      set -e
-      ARCH="{model}"
-      find "{RUN_DIR}/sprint-train" -mindepth 1 -maxdepth 1 -type d | while read -r COMBO_DIR; do
-        COMBO="$(basename "${COMBO_DIR}")"
-        RUN_ROOT="{STEP_DIR}/${COMBO}"
-        mkdir -p "${RUN_ROOT}/logs" "${RUN_ROOT}/results"
-        echo "[sprint-eval] ${ARCH} :: ${COMBO}"
-        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model eval \
-          --task-id "{TASK_ID}_${ARCH}_${COMBO}_sprint" \
-          --conf {eval_conf_dir} \
-          --data-file {full_data} \
-          --filter "^${ARCH}$" \
-          --run-dir "${RUN_ROOT}" \
-          --save-dir "${RUN_ROOT}/results" \
-          --log-dir "${RUN_ROOT}/logs" \
-          --checkpoints-path "${COMBO_DIR}/artifacts"
-        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py copy-meta \
-          --source-dir "${COMBO_DIR}" \
-          --run-root "${RUN_ROOT}"
-      done
-
-  - id: sprint-summarize
-    type: shell
-    depends_on: [sprint-eval]
-    description: "Aggregate sprint results and select top combinations."
-    vars:
-      STEP_DIR: "{RUN_DIR}/sprint-summarize"
+      STEP_DIR: "{RUN_DIR}/optuna"
     command: |
       set -e
       mkdir -p "{STEP_DIR}"
-      PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py summarize-sprint \
-        --pipeline-root "{RUN_DIR}" \
-        --step-dir "{STEP_DIR}" \
-        --top-k "{top_k}"
+      ARCH="^{model}$"
+      STORAGE="sqlite:///{RUN_DIR}/optuna/optuna.db"
+      PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/hpo_optuna.py \
+        --arch "${ARCH}" \
+        --subset-data "{subset_data}" \
+        --full-data "{full_data}" \
+        --configs-dir "{CONFIGS_DIR}" \
+        --run-dir "{RUN_DIR}" \
+        --sprint-epochs {sprint_epochs} \
+        --batch-size {batch_size} \
+        --n-trials {hpo_trials} \
+        --n-jobs {hpo_jobs} \
+        --top-k {top_k} \
+        --seed {optuna_seed} \
+        --study "{model}_optuna" \
+        --storage "${STORAGE}"
 
   - id: full-train
     type: shell
-    depends_on: [sprint-summarize]
+    depends_on: [optuna-search]
     description: "Train selected combinations with full training configuration."
     vars:
       STEP_DIR: "{RUN_DIR}/full-train"
@@ -144,31 +93,37 @@ steps:
         --output "{STEP_DIR}/candidates.txt" \
         --default-arch "{model}"
       TAB="$(printf '\t')"
+      SEED_LIST="{robust_seeds}"
       while IFS="${TAB}" read -r ARCH_ID COMBO LR WD CLIP; do
         [ -z "${ARCH_ID}" ] && continue
         TAG="${COMBO:-lr${LR}_wd${WD}_clip${CLIP}}"
-        RUN_ROOT="{STEP_DIR}/${TAG}"
-        mkdir -p "${RUN_ROOT}/artifacts" "${RUN_ROOT}/logs" "${RUN_ROOT}/results"
-        echo "[full-train] ${ARCH_ID} :: ${TAG}"
-        WEIGHT_DECAY=${WD} GRAD_CLIP_MAX_NORM=${CLIP} PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
-          --data-file {full_data} \
-          --conf {CONFIGS_DIR}/model \
-          --filter "^${ARCH_ID}$" \
-          --run-dir "${RUN_ROOT}" \
-          --save-dir "${RUN_ROOT}/artifacts" \
-          --log-dir "${RUN_ROOT}/logs" \
-          --task-id "{TASK_ID}_${ARCH_ID}_${TAG}_full" \
-          --num-epochs {full_epochs} \
-          --learning-rate "${LR}" \
-          --batch-size {batch_size}
-        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py write-meta \
-          --run-root "${RUN_ROOT}" \
-          --arch "${ARCH_ID}" \
-          --combo "${TAG}" \
-          --learning-rate "${LR}" \
-          --weight-decay "${WD}" \
-          --grad-clip "${CLIP}" \
-          --stage "full"
+        for SEED in ${SEED_LIST}; do
+          RUN_TAG="${TAG}_seed${SEED}"
+          RUN_ROOT="{STEP_DIR}/${RUN_TAG}"
+          mkdir -p "${RUN_ROOT}/artifacts" "${RUN_ROOT}/logs" "${RUN_ROOT}/results"
+          echo "[full-train] ${ARCH_ID} :: ${RUN_TAG}"
+          WEIGHT_DECAY=${WD} GRAD_CLIP_MAX_NORM=${CLIP} PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+            --data-file {full_data} \
+            --conf {CONFIGS_DIR}/model \
+            --filter "^${ARCH_ID}$" \
+            --run-dir "${RUN_ROOT}" \
+            --save-dir "${RUN_ROOT}/artifacts" \
+            --log-dir "${RUN_ROOT}/logs" \
+            --task-id "{TASK_ID}_${ARCH_ID}_${RUN_TAG}_full" \
+            --num-epochs {full_epochs} \
+            --learning-rate "${LR}" \
+            --batch-size {batch_size} \
+            --seed "${SEED}"
+          PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py write-meta \
+            --run-root "${RUN_ROOT}" \
+            --arch "${ARCH_ID}" \
+            --combo "${TAG}" \
+            --learning-rate "${LR}" \
+            --weight-decay "${WD}" \
+            --grad-clip "${CLIP}" \
+            --stage "full" \
+            --seed "${SEED}"
+        done
       done < "{STEP_DIR}/candidates.txt"
 
   - id: full-eval
@@ -194,15 +149,14 @@ steps:
           --save-dir "${RUN_ROOT}/results" \
           --log-dir "${RUN_ROOT}/logs" \
           --checkpoints-path "${COMBO_DIR}/artifacts"
-            
+
         PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py copy-meta \
           --source-dir "${COMBO_DIR}" \
           --run-root "${RUN_ROOT}"
-        # Optional LOCO aggregation if datasets exist
         if [ -d "{data_file_loco}" ]; then
           LOCO_SUB="${RUN_ROOT}/loco"
           mkdir -p "${LOCO_SUB}"
-          PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/aggregate_loco_metrics.py "${LOCO_SUB}" "${ARCH_ID}" || true
+          PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/aggregate_loco_metrics.py "${LOCO_SUB}" "${ARCH}" || true
         fi
       done
 
