@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
+from statistics import mean
 from typing import Iterable, List, Optional, Sequence
 
 import yaml
@@ -275,14 +277,64 @@ def cmd_summarize_full(args: argparse.Namespace) -> None:
                 pass
 
     entries.sort(key=lambda x: (x["mae"], -x["r2_score"]))
+
+    def _safe_mean(values):
+        valid = [value for value in values if value is not None]
+        return mean(valid) if valid else None
+
+    def _group_key(entry):
+        return (
+            entry.get("arch"),
+            entry.get("combo"),
+            entry.get("learning_rate"),
+            entry.get("weight_decay"),
+            entry.get("grad_clip"),
+        )
+
+    grouped_entries = defaultdict(list)
+    for entry in entries:
+        grouped_entries[_group_key(entry)].append(entry)
+
+    def _group_score(items):
+        avg_mae = _safe_mean([it.get("mae") for it in items])
+        avg_r2 = _safe_mean([it.get("r2_score") for it in items])
+        mae_component = avg_mae if avg_mae is not None else float("inf")
+        r2_component = -avg_r2 if avg_r2 is not None else float("inf")
+        return (mae_component, r2_component)
+
+    sorted_groups = sorted(grouped_entries.items(), key=lambda kv: _group_score(kv[1]))
+
+    group_leaderboard = []
+    for rank, (group_key, items) in enumerate(sorted_groups, start=1):
+        group_leaderboard.append(
+            {
+                "rank": rank,
+                "arch": group_key[0],
+                "combo": group_key[1],
+                "learning_rate": group_key[2],
+                "weight_decay": group_key[3],
+                "grad_clip": group_key[4],
+                "mean_mae": _safe_mean([it.get("mae") for it in items]),
+                "mean_r2_score": _safe_mean([it.get("r2_score") for it in items]),
+                "mean_rmse": _safe_mean([it.get("rmse") for it in items]),
+                "num_runs": len(items),
+            }
+        )
+
     summary = {
         "stage": "full",
         "generated_at": _now_iso(),
         "entries": entries,
+        "group_leaderboard": group_leaderboard,
     }
     (step_dir / "results" / "full_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    best = entries[0]
+    best_group_key, best_group_items = sorted_groups[0]
+    best = sorted(best_group_items, key=lambda it: (it["mae"], -it["r2_score"]))[0]
+
+    group_mean_mae = _safe_mean([it.get("mae") for it in best_group_items])
+    group_mean_r2 = _safe_mean([it.get("r2_score") for it in best_group_items])
+    group_mean_rmse = _safe_mean([it.get("rmse") for it in best_group_items])
     best_payload = {
         "arch": best["arch"],
         "combo": best["combo"],
@@ -295,6 +347,10 @@ def cmd_summarize_full(args: argparse.Namespace) -> None:
         "eval_path": best["eval_path"],
         "generated_at": summary["generated_at"],
     }
+    best_payload["group_mean_mae"] = group_mean_mae
+    best_payload["group_mean_r2_score"] = group_mean_r2
+    best_payload["group_mean_rmse"] = group_mean_rmse
+    best_payload["group_size"] = len(best_group_items)
     (reports_dir / "best_model.json").write_text(json.dumps(best_payload, indent=2, ensure_ascii=False), encoding="utf-8")
 
     md_lines = ["# Full Training Results", "", "| Rank | Combo | MAE | R² |", "|---|---|---|---|"]
