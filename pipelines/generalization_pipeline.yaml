@@ -4,11 +4,12 @@ metadata:
     RUNS_DIR: "{EXPERIMENT_HOME}/sota_generalization"
     RUN_DIR: "{RUNS_DIR}/{RUN_TS}"
     BEST_DIR: "{RUNS_DIR}/best"
-    rank_scan_all: "false"
+    ARTIFACTS_DIR: "{EXPERIMENT_HOME}/artifacts"
+    DATASET_DIR: "{ARTIFACTS_DIR}/cpet_dataset"
 
     model_list: "cpet_former_dann_regression cpet_former_mixstyle cpet_former_center_aware_mixstyle cpet_former_prototype_align cpet_former_center_invariant_layer_norm cpet_former_center_adaptive_adapter cpet_former_stochastic_router cpet_former_consistency_regularized"
-    data_file: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset.h5"
-    subset_data_file: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_medium.h5"
+    data_file: "{DATASET_DIR}/cpet_dataset.h5"
+    subset_data_file: "{DATASET_DIR}/cpet_dataset_medium.h5"
     stage1_data_file: "{subset_data_file}"
     stage2_data_file: "{data_file}"
 
@@ -26,6 +27,7 @@ metadata:
     stage2_batch: "64"
     stage2_seeds: "17 43 89"
     stage2_top_k: "3"
+
 
 
     # smoke test
@@ -46,6 +48,9 @@ metadata:
     # stage2_batch: "64"
     # stage2_seeds: "42 101"
     # stage2_top_k: "3"
+
+
+    rank_scan_all: "false"
   envs:
     PYTHONUNBUFFERED: "1"
     PYTHONPATH: "{EXPERIMENT_HOME}/src"
