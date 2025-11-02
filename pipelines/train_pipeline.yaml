@@ -4,11 +4,14 @@ metadata:
     RUNS_DIR: "{EXPERIMENT_HOME}/sota"
     RUN_DIR: "{RUNS_DIR}/{RUN_TS}"
     BEST_DIR: "{RUNS_DIR}/best"
+    ARTIFACTS_DIR: "{EXPERIMENT_HOME}/artifacts"
+    DATASET_DIR: "{ARTIFACTS_DIR}/cpet_dataset/"
     model_list: "{model_list}"
-    data_file: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset.h5"
+    data_file: "{DATASET_DIR}/cpet_dataset.h5"
+    subset_data_file: "{DATASET_DIR}/cpet_dataset_medium.h5"
     learning_rate: "5e-5"
-    weight_decay: "1e-6"
-    grad_clip: "0.5"
+    weight_decay: "1e-5"
+    grad_clip: "0.3"
     num_epochs: "30"
     batch_size: "64"
     model_overrides: ""
@@ -63,39 +66,39 @@ steps:
       get_model_params() {
         ARCH_NAME="$1"
         python - <<'PY' "${ARCH_NAME}" "${PARAM_FILE}"
-        import json
-        import sys
-        from pathlib import Path
+      import json
+      import sys
+      from pathlib import Path
 
-        arch = sys.argv[1]
-        param_file = Path(sys.argv[2])
-        defaults = {
-            "learning_rate": "{learning_rate}",
-            "weight_decay": "{weight_decay}",
-            "grad_clip": "{grad_clip}",
-            "num_epochs": "{num_epochs}",
-            "batch_size": "{batch_size}",
-        }
-        overrides = {}
-        if param_file.is_file():
-            try:
-                overrides = json.loads(param_file.read_text(encoding="utf-8"))
-            except json.JSONDecodeError as exc:
-                raise SystemExit(f"[train-models] Invalid overrides file: {exc}")
-        config = dict(defaults)
-        config.update(overrides.get(arch, {}))
-        print(
-            "\t".join(
-                [
-                    str(config["learning_rate"]),
-                    str(config["weight_decay"]),
-                    str(config["grad_clip"]),
-                    str(config["num_epochs"]),
-                    str(config["batch_size"]),
-                ]
-            )
-        )
-        PY
+      arch = sys.argv[1]
+      param_file = Path(sys.argv[2])
+      defaults = {
+          "learning_rate": "{learning_rate}",
+          "weight_decay": "{weight_decay}",
+          "grad_clip": "{grad_clip}",
+          "num_epochs": "{num_epochs}",
+          "batch_size": "{batch_size}",
+      }
+      overrides = {}
+      if param_file.is_file():
+          try:
+              overrides = json.loads(param_file.read_text(encoding="utf-8"))
+          except json.JSONDecodeError as exc:
+              raise SystemExit(f"[train-models] Invalid overrides file: {exc}")
+      config = dict(defaults)
+      config.update(overrides.get(arch, {}))
+      print(
+          "\t".join(
+              [
+                  str(config["learning_rate"]),
+                  str(config["weight_decay"]),
+                  str(config["grad_clip"]),
+                  str(config["num_epochs"]),
+                  str(config["batch_size"]),
+              ]
+          )
+      )
+      PY
       }
       for ARCH in ${MODELS}; do
         [ -z "${ARCH}" ] && continue
