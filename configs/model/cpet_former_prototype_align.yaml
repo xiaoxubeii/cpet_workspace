@@ -1,0 +1,12 @@
+# Prototype alignment variant encouraging centre-invariant embeddings
+
+include:
+  - "./cpet_former_generalization_base.yaml"
+
+model:
+  name: "cpet_former_prototype_align"
+  num_centers: ${NUM_CENTERS:8}
+  prototype_temperature: 0.5
+  prototype_momentum: 0.1
+
+prototype_loss_weight: 1.0

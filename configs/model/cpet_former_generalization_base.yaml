@@ -1,0 +1,9 @@
+# CPETFormer generalization variants base configuration
+
+include:
+  - "./cpet_former.yaml"
+
+# Default regularisation weights (override per variant as needed)
+domain_loss_weight: 0.0
+prototype_loss_weight: 0.0
+consistency_loss_weight: 0.0

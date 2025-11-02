@@ -1,0 +1,119 @@
+center_mapping:
+  Institute_Name:
+    shanxi: 0
+    xuhui: 1
+    zhongshan: 2
+dataset_name: cpet
+use_swanlab: true
+project: vox_cpet
+save_dir: null
+checkpoints_path: null
+data_file_path: null
+test_only: false
+learning_rate: 5e-5
+weight_decay: 1e-5
+num_epochs: 50
+batch_size: 64
+grad_clip_max_norm: '0.5'
+validation_frequency: 1
+features_group: timeseries
+target_group: summary
+max_seq_len: 128
+device: cpu
+mixed_precision: true
+compile_model: true
+early_stopping:
+  enabled: true
+  patience: 15
+  min_delta: 1e-6
+checkpointing:
+  save_best_only: true
+  monitor: val_loss
+  mode: min
+  save_frequency: epoch
+logging:
+  log_level: INFO
+  log_to_file: true
+  log_dir: logs
+feature_columns:
+- Age
+- Gender
+- Height_cm
+- Weight_kg
+- BP_Diast
+- BP_Syst
+- BR_pct
+- Bf
+- CHO_kcal_h
+- CO
+- EE_kcal_h
+- HR
+- METS
+- PetCO2
+- PetO2
+- Power_Load
+- RER
+- SpO2
+- VCO2
+- VE
+- VE_VCO2
+- VE_VO2
+- VO2
+- VO2_HR
+- VO2_kg
+- VT
+filter_conditions: null
+test_filter_conditions: null
+validation_filter_conditions: null
+filter_strategy:
+  filter_order:
+  - hr_max_ratio
+  - load_phase_filter
+scaler_config:
+  enable_feature_scaling: true
+  enable_target_scaling: true
+  feature_scaler_type: standard
+  target_scaler_type: standard
+model:
+  name: cpa_former
+  num_phases: 3
+  d_model: 256
+  n_heads: 8
+  n_layers: 4
+  d_ff: 1024
+  dropout: 0.1
+  use_gradient_checkpointing: true
+  head_selection_mode: weighted_ensemble
+  phase_threshold: 0.5
+  use_phase_specific_heads: false
+  use_learned_selection: true
+use_multi_head_loss: true
+head_loss_weights:
+  phase_0: 1.6
+  phase_1: 1.4
+  phase_2: 0.9
+use_curriculum_learning: true
+curriculum_epoch_threshold: 12
+finetune_heads_only: false
+accuracy_threshold: 2.0
+metadata_columns:
+- Load_Phase
+target_columns:
+- VO2_kg_at_AT
+scheduler:
+  name: cosine_with_warmup
+  warmup_epochs: 5
+  min_lr: 1e-6
+curriculum_strategy: phase_progression
+early_phases:
+- 0
+- 1
+all_phases:
+- 0
+- 1
+- 2
+_metadata:
+  generated_at: '2025-10-29T00:29:33.933524'
+  generated_by: ConfigManager
+  loaded_files:
+  - /home/cheng/workspace/cpetx_workspace/cpaformer_cpet/tmp_smoke_full_grid/p01.6_p11.4_p20.9/config/cpa_former_tuned.yaml

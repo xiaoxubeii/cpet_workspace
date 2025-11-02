@@ -1,0 +1,31 @@
+{
+  "run_info": {
+    "result_dir": "/home/cheng/workspace/cpetx_workspace/cpaformer_cpet/tmp_smoke_full_grid/manual_smoke/train/artifacts",
+    "run_dir": "/home/cheng/workspace/cpetx_workspace/cpaformer_cpet/tmp_smoke_full_grid/manual_smoke/train",
+    "summary_time": "2025-10-29T18:21:55.081922",
+    "description": ""
+  },
+  "models": {
+    "cpet_former_center_film": {
+      "cpet_former_center_film": {
+        "model_path": "/home/cheng/workspace/cpetx_workspace/cpaformer_cpet/tmp_smoke_full_grid/manual_smoke/train/artifacts/cpet_former_center_film",
+        "metrics": {
+          "test_metrics": {
+            "mae": 13.275661335262791,
+            "rmse": 13.668927236679746,
+            "mse": 186.8395718016454,
+            "correlation": 0.09965585620071937,
+            "r2_score": -16.473238403079684,
+            "mape": 99.98297154427134,
+            "num_samples": 66
+          },
+          "num_samples": 66,
+          "timestamp": "2025-10-29T18:21:55.074106"
+        },
+        "config_file": null,
+        "training_time": null
+      }
+    }
+  },
+  "overall_stats": {}
+}

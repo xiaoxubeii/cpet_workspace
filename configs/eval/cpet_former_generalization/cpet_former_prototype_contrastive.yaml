@@ -1,0 +1,5 @@
+# Evaluation config for prototype contrastive variant
+
+include:
+  - "${CONFIGS_DIR}/model/cpet_former_prototype_contrastive.yaml"
+  - "./base.yaml"

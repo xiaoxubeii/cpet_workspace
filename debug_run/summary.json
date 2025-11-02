@@ -1,0 +1,31 @@
+{
+  "run_info": {
+    "result_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/debug_run/artifacts",
+    "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/debug_run",
+    "summary_time": "2025-10-31T14:30:59.903469",
+    "description": ""
+  },
+  "models": {
+    "cpet_former": {
+      "cpet_former": {
+        "model_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/debug_run/artifacts/cpet_former",
+        "metrics": {
+          "test_metrics": {
+            "mae": 1.0635845257685734,
+            "rmse": 1.5558988177935125,
+            "mse": 2.42082113121125,
+            "correlation": 0.9112014717889065,
+            "r2_score": 0.8209031532907725,
+            "mape": 7.990377992053654,
+            "num_samples": 130
+          },
+          "num_samples": 130,
+          "timestamp": "2025-10-31T14:30:59.891441"
+        },
+        "config_file": null,
+        "training_time": null
+      }
+    }
+  },
+  "overall_stats": {}
+}

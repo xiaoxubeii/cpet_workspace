@@ -1,0 +1,95 @@
+{
+  "stage": "stage1",
+  "generated_at": "2025-11-01T12:26:55.836143+00:00",
+  "top_k": 3,
+  "entries": [
+    {
+      "arch": "cpet_former_prototype_align",
+      "seed": "17",
+      "mae": 8.387713401134198,
+      "r2_score": -5.2176266329931265,
+      "rmse": 9.167474290549679,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_prototype_align/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_prototype_align/seed_17/artifacts/cpet_former_prototype_align/results",
+      "selected_seed": "17",
+      "rank": 1
+    },
+    {
+      "arch": "cpet_former_mixstyle",
+      "seed": "17",
+      "mae": 9.095302233329186,
+      "r2_score": -6.1212007077404005,
+      "rmse": 9.811016232258265,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_mixstyle/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_mixstyle/seed_17/artifacts/cpet_former_mixstyle/results",
+      "selected_seed": "17",
+      "rank": 2
+    },
+    {
+      "arch": "cpet_former_center_aware_mixstyle",
+      "seed": "17",
+      "mae": 9.971247537319476,
+      "r2_score": -7.390132756193056,
+      "rmse": 10.649318041665454,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_center_aware_mixstyle/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_center_aware_mixstyle/seed_17/artifacts/cpet_former_center_aware_mixstyle/results",
+      "selected_seed": "17",
+      "rank": 3
+    },
+    {
+      "arch": "cpet_former_center_adaptive_adapter",
+      "seed": "17",
+      "mae": 10.211360804851239,
+      "r2_score": -7.71260407060476,
+      "rmse": 10.852039614299347,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_center_adaptive_adapter/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_center_adaptive_adapter/seed_17/artifacts/cpet_former_center_adaptive_adapter/results",
+      "selected_seed": "17",
+      "rank": 4
+    },
+    {
+      "arch": "cpet_former_consistency_regularized",
+      "seed": "17",
+      "mae": 10.256777409406808,
+      "r2_score": -7.816905005794013,
+      "rmse": 10.916802714592864,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_consistency_regularized/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_consistency_regularized/seed_17/artifacts/cpet_former_consistency_regularized/results",
+      "selected_seed": "17",
+      "rank": 5
+    },
+    {
+      "arch": "cpet_former_center_invariant_layer_norm",
+      "seed": "17",
+      "mae": 10.730462305362408,
+      "r2_score": -8.512721914331664,
+      "rmse": 11.339392330867847,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_center_invariant_layer_norm/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_center_invariant_layer_norm/seed_17/artifacts/cpet_former_center_invariant_layer_norm/results",
+      "selected_seed": "17",
+      "rank": 6
+    },
+    {
+      "arch": "cpet_former_dann_regression",
+      "seed": "17",
+      "mae": 11.19257931984388,
+      "r2_score": -9.353470574300973,
+      "rmse": 11.829880506539546,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_dann_regression/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_dann_regression/seed_17/artifacts/cpet_former_dann_regression/results",
+      "selected_seed": "17",
+      "rank": 7
+    },
+    {
+      "arch": "cpet_former_stochastic_router",
+      "seed": "17",
+      "mae": 12.589678425284532,
+      "r2_score": -11.735515901285515,
+      "rmse": 13.120357003351184,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_stochastic_router/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/cpet_former_stochastic_router/seed_17/artifacts/cpet_former_stochastic_router/results",
+      "selected_seed": "17",
+      "rank": 8
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# Centre-adaptive adapter variant
+
+include:
+  - "./cpet_former_generalization_base.yaml"
+
+model:
+  name: "cpet_former_center_adaptive_adapter"
+  num_centers: ${NUM_CENTERS:8}
+  center_embed_dim: 256
+  adapter_rank: 32
+  adapter_dropout: 0.1

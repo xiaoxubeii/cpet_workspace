@@ -1,0 +1,93 @@
+{
+  "stage": "stage2",
+  "generated_at": "2025-11-01T12:27:22.432137+00:00",
+  "entries": [
+    {
+      "arch": "cpet_former_prototype_align",
+      "num_seeds": 2,
+      "mae_mean": 10.906918829908737,
+      "mae_std": 0.6579974043827788,
+      "r2_mean": -8.870356359438226,
+      "r2_std": 1.1018781041203818,
+      "rmse_mean": 11.532516112742542,
+      "rmse_std": 0.6457348854601008,
+      "seed_metrics": [
+        {
+          "seed": "101",
+          "mae": 11.564916234291516,
+          "r2_score": -9.972234463558609,
+          "rmse": 12.178250998202643,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_prototype_align/seed_101",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_prototype_align/seed_101/artifacts/cpet_former_prototype_align/results"
+        },
+        {
+          "seed": "42",
+          "mae": 10.248921425525959,
+          "r2_score": -7.768478255317845,
+          "rmse": 10.886781227282441,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_prototype_align/seed_42",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_prototype_align/seed_42/artifacts/cpet_former_prototype_align/results"
+        }
+      ],
+      "rank": 1
+    },
+    {
+      "arch": "cpet_former_mixstyle",
+      "num_seeds": 2,
+      "mae_mean": 11.106196846641026,
+      "mae_std": 0.8463214408892847,
+      "r2_mean": -9.15819902710963,
+      "r2_std": 1.3904776487923964,
+      "rmse_mean": 11.690184314258062,
+      "rmse_std": 0.8038729593926641,
+      "seed_metrics": [
+        {
+          "seed": "101",
+          "mae": 11.952518287530312,
+          "r2_score": -10.548676675902026,
+          "rmse": 12.494057273650725,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_mixstyle/seed_101",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_mixstyle/seed_101/artifacts/cpet_former_mixstyle/results"
+        },
+        {
+          "seed": "42",
+          "mae": 10.259875405751743,
+          "r2_score": -7.767721378317233,
+          "rmse": 10.886311354865397,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_mixstyle/seed_42",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_mixstyle/seed_42/artifacts/cpet_former_mixstyle/results"
+        }
+      ],
+      "rank": 2
+    },
+    {
+      "arch": "cpet_former_center_aware_mixstyle",
+      "num_seeds": 2,
+      "mae_mean": 11.437929227260444,
+      "mae_std": 0.6631311898048109,
+      "r2_mean": -9.8025417319832,
+      "r2_std": 1.10605673418873,
+      "rmse_mean": 12.067824777377737,
+      "rmse_std": 0.6194313407210057,
+      "seed_metrics": [
+        {
+          "seed": "101",
+          "mae": 10.774798037455632,
+          "r2_score": -8.69648499779447,
+          "rmse": 11.448393436656731,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_center_aware_mixstyle/seed_101",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_center_aware_mixstyle/seed_101/artifacts/cpet_former_center_aware_mixstyle/results"
+        },
+        {
+          "seed": "42",
+          "mae": 12.101060417065254,
+          "r2_score": -10.908598466171929,
+          "rmse": 12.687256118098743,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_center_aware_mixstyle/seed_42",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/cpet_former_center_aware_mixstyle/seed_42/artifacts/cpet_former_center_aware_mixstyle/results"
+        }
+      ],
+      "rank": 3
+    }
+  ]
+}

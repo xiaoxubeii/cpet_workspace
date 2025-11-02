@@ -1,0 +1,13 @@
+# Stochastic router (mixture-of-experts) variant
+
+include:
+  - "./cpet_former_generalization_base.yaml"
+
+model:
+  name: "cpet_former_stochastic_router"
+  num_experts: 4
+  router_hidden: 256
+  router_temperature: 1.0
+  router_dropout: 0.1
+  num_centers: ${NUM_CENTERS:8}
+  center_embed_dim: 256

@@ -1,0 +1,5 @@
+# Evaluation config for centre-invariant layer norm variant
+
+include:
+  - "${CONFIGS_DIR}/model/cpet_former_center_invariant_layer_norm.yaml"
+  - "./base.yaml"

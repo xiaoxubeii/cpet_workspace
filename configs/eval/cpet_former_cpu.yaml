@@ -1,0 +1,6 @@
+include:
+  - "${CONFIGS_DIR}/model/cpet_former_cpu.yaml"
+  - "${CONFIGS_DIR}/common/eval/all.yaml"
+
+center_columns:
+  - Institute_Name

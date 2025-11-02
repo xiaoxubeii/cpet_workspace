@@ -1,0 +1,13 @@
+# Center-aware MixStyle variant conditioned on centre embeddings
+
+include:
+  - "./cpet_former_generalization_base.yaml"
+
+model:
+  name: "cpet_former_center_aware_mixstyle"
+  num_centers: ${NUM_CENTERS:8}
+  center_embed_dim: 256
+  center_dropout: 0.1
+  mixstyle_p: 0.6
+  mixstyle_alpha: 0.3
+  mixstyle_eps: 1.0e-5

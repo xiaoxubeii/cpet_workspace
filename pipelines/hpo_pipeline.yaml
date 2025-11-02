@@ -6,11 +6,11 @@ metadata:
     BEST_DIR: "{RUNS_DIR}/best"
     rank_scan_all: "false"
 
-    model_list: "cpet_former_center_film cpet_former_v1"
+    model_list: ""
     baseline_arch: "cpet_former"
-    # subset_data: "{EXPERIMENT_HOME}/artifacts/cpet_dataset/cpet_dataset_small.h5"
-    full_data: "{EXPERIMENT_HOME}/artifacts/cpet_dataset/cpet_dataset.h5"
-    data_file_loco: "{EXPERIMENT_HOME}/artifacts/cpet_dataset/cpet_dataset_loco"
+    subset_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_medium.h5"
+    full_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset.h5"
+    data_file_loco: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_loco"
     hpo_trials: "100"
     hpo_jobs: "1"
     optuna_seed: "42"
@@ -26,13 +26,14 @@ metadata:
     # subset_data: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5"
     # full_data: "{subset_data}"
     # data_file_loco: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_loco_small"
-    # hpo_trials: "10"
+    # hpo_trials: "1"
     # hpo_jobs: "1"
     # optuna_seed: "7"
-    # robust_seeds: "42 101"
+    # robust_seeds: "42"
     # sprint_epochs: "1"
     # full_epochs: "1"
     # batch_size: "8"
+    # top_k: "1"
   envs:
     PYTHONUNBUFFERED: "1"
     PYTHONPATH: "{EXPERIMENT_HOME}/src"
@@ -78,11 +79,14 @@ steps:
         MODEL_ROOT="{RUN_DIR}/${MODEL}"
         LOG_FILE="{STEP_DIR}/logs/${MODEL}.log"
         echo "[multi-model] Launch pipeline for ${MODEL}" | tee "${LOG_FILE}"
-        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx run \
+        if ! PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx run \
           --config {EXPERIMENT_HOME}/pipelines/_hpo_pipeline.yaml \
           --vars model=${MODEL} baseline_arch={baseline_arch} pipeline_name=${PIPELINE_NAME} run_dir=${MODEL_ROOT} subset_data={subset_data} full_data={full_data} data_file_loco={data_file_loco} \
           --vars sprint_epochs={sprint_epochs} full_epochs={full_epochs} batch_size={batch_size} top_k={top_k} hpo_trials={hpo_trials} hpo_jobs={hpo_jobs} optuna_seed={optuna_seed} robust_seeds="{robust_seeds}" \
-          2>&1 | tee -a "${LOG_FILE}"
+          2>&1 | tee -a "${LOG_FILE}"; then
+          echo "[multi-model] ${MODEL} failed, continuing to next" | tee -a "${LOG_FILE}"
+          continue
+        fi
       done
 
   - id: collect-reports

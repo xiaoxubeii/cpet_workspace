@@ -1,0 +1,391 @@
+{
+  "stage": "stage1",
+  "generated_at": "2025-11-01T12:51:16.028545+00:00",
+  "top_k": 3,
+  "entries": [
+    {
+      "arch": "cpet_former_center_invariant_layer_norm",
+      "seed": "17",
+      "mae": 0.8335892670925344,
+      "r2_score": 0.8663621809839094,
+      "rmse": 1.2732560045317272,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_center_invariant_layer_norm/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_center_invariant_layer_norm/seed_17/artifacts/cpet_former_center_invariant_layer_norm/results",
+      "center_metrics": {
+        "per_center": {
+          "shanxi": {
+            "mae": 0.5879235013375425,
+            "rmse": 0.7949009584550201,
+            "mse": 0.6318675337527095,
+            "mape": 5.1157583472320685,
+            "r2_score": 0.9130248904810633,
+            "correlation": 0.9562823145688256,
+            "num_samples": 264
+          },
+          "xuhui": {
+            "mae": 1.51900295489886,
+            "rmse": 2.2223426957706325,
+            "mse": 4.938807057445082,
+            "mape": 12.78483845189084,
+            "r2_score": 0.7860670094479886,
+            "correlation": 0.8875639777320576,
+            "num_samples": 73
+          },
+          "zhongshan": {
+            "mae": 1.1300005260816568,
+            "rmse": 1.414574466305988,
+            "mse": 2.0010209207248706,
+            "mape": 8.193919372102394,
+            "r2_score": 0.8585389005653273,
+            "correlation": 0.9303377787102137,
+            "num_samples": 50
+          }
+        },
+        "macro": {
+          "rmse": 1.4772727068438802,
+          "mae": 1.0789756607726864
+        },
+        "rmse_gap": 1.4274417373156125
+      },
+      "center_metrics_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_center_invariant_layer_norm/seed_17/artifacts/cpet_former_center_invariant_layer_norm/results/test_center_metrics.json",
+      "selected_seed": "17",
+      "rank": 1
+    },
+    {
+      "arch": "cpet_former_stochastic_router",
+      "seed": "17",
+      "mae": 0.8513132770377221,
+      "r2_score": 0.8416712018822048,
+      "rmse": 1.3858971472349462,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_stochastic_router/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_stochastic_router/seed_17/artifacts/cpet_former_stochastic_router/results",
+      "center_metrics": {
+        "per_center": {
+          "shanxi": {
+            "mae": 0.6278055962752287,
+            "rmse": 0.8246555090695504,
+            "mse": 0.6800567086387594,
+            "mape": 5.256542231655758,
+            "r2_score": 0.906391761637666,
+            "correlation": 0.9530952094353873,
+            "num_samples": 264
+          },
+          "xuhui": {
+            "mae": 1.5313914516039633,
+            "rmse": 2.5620277565904566,
+            "mse": 6.563986225539928,
+            "mape": 14.236231849545785,
+            "r2_score": 0.7156695560610932,
+            "correlation": 0.851667238170722,
+            "num_samples": 73
+          },
+          "zhongshan": {
+            "mae": 1.038519696596976,
+            "rmse": 1.300839373675751,
+            "mse": 1.6921830761051202,
+            "mape": 7.248210684856566,
+            "r2_score": 0.8803720261436039,
+            "correlation": 0.9415733661478703,
+            "num_samples": 50
+          }
+        },
+        "macro": {
+          "rmse": 1.5625075464452527,
+          "mae": 1.065905581492056
+        },
+        "rmse_gap": 1.7373722475209061
+      },
+      "center_metrics_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_stochastic_router/seed_17/artifacts/cpet_former_stochastic_router/results/test_center_metrics.json",
+      "selected_seed": "17",
+      "rank": 2
+    },
+    {
+      "arch": "cpet_former_consistency_regularized",
+      "seed": "17",
+      "mae": 0.8590677214229457,
+      "r2_score": 0.8371296073697799,
+      "rmse": 1.405633551614347,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_consistency_regularized/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_consistency_regularized/seed_17/artifacts/cpet_former_consistency_regularized/results",
+      "center_metrics": {
+        "per_center": {
+          "shanxi": {
+            "mae": 0.601342800872181,
+            "rmse": 0.8053473722072108,
+            "mse": 0.6485843899210597,
+            "mape": 5.083861959199245,
+            "r2_score": 0.910723853763099,
+            "correlation": 0.9556286806992625,
+            "num_samples": 264
+          },
+          "xuhui": {
+            "mae": 1.5939846423953683,
+            "rmse": 2.558485883217836,
+            "mse": 6.545850014624949,
+            "mape": 13.611213136135106,
+            "r2_score": 0.7164551574812731,
+            "correlation": 0.8466038772631054,
+            "num_samples": 73
+          },
+          "zhongshan": {
+            "mae": 1.1468765973112465,
+            "rmse": 1.5202859514202756,
+            "mse": 2.3112693740858528,
+            "mape": 8.113223135287466,
+            "r2_score": 0.8366060527595919,
+            "correlation": 0.9164961075833528,
+            "num_samples": 50
+          }
+        },
+        "macro": {
+          "rmse": 1.6280397356151075,
+          "mae": 1.1140680135262653
+        },
+        "rmse_gap": 1.7531385110106252
+      },
+      "center_metrics_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_consistency_regularized/seed_17/artifacts/cpet_former_consistency_regularized/results/test_center_metrics.json",
+      "selected_seed": "17",
+      "rank": 3
+    },
+    {
+      "arch": "cpet_former_center_adaptive_adapter",
+      "seed": "17",
+      "mae": 0.9301391457782469,
+      "r2_score": 0.8302482760449175,
+      "rmse": 1.435020615115221,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_center_adaptive_adapter/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_center_adaptive_adapter/seed_17/artifacts/cpet_former_center_adaptive_adapter/results",
+      "center_metrics": {
+        "per_center": {
+          "shanxi": {
+            "mae": 0.6492804774094297,
+            "rmse": 0.839676923510108,
+            "mse": 0.7050573358753999,
+            "mape": 5.626626749600219,
+            "r2_score": 0.902950482926866,
+            "correlation": 0.9552013741170434,
+            "num_samples": 264
+          },
+          "xuhui": {
+            "mae": 1.8144168393487141,
+            "rmse": 2.621223688558254,
+            "mse": 6.87081362545894,
+            "mape": 15.692723887104588,
+            "r2_score": 0.7023787952590446,
+            "correlation": 0.8382920176860487,
+            "num_samples": 73
+          },
+          "zhongshan": {
+            "mae": 1.1220274821527187,
+            "rmse": 1.4780963489379504,
+            "mse": 2.1847688167436994,
+            "mape": 7.833377071069419,
+            "r2_score": 0.8455489417296069,
+            "correlation": 0.9222838220209166,
+            "num_samples": 50
+          }
+        },
+        "macro": {
+          "rmse": 1.6463323203354374,
+          "mae": 1.1952415996369543
+        },
+        "rmse_gap": 1.781546765048146
+      },
+      "center_metrics_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_center_adaptive_adapter/seed_17/artifacts/cpet_former_center_adaptive_adapter/results/test_center_metrics.json",
+      "selected_seed": "17",
+      "rank": 4
+    },
+    {
+      "arch": "cpet_former_prototype_align",
+      "seed": "17",
+      "mae": 0.9336351901772058,
+      "r2_score": 0.8321831072857111,
+      "rmse": 1.4268189904983966,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_prototype_align/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_prototype_align/seed_17/artifacts/cpet_former_prototype_align/results",
+      "center_metrics": {
+        "per_center": {
+          "shanxi": {
+            "mae": 0.6701479211492126,
+            "rmse": 0.8693885475266434,
+            "mse": 0.7558364465704867,
+            "mape": 5.717467955005544,
+            "r2_score": 0.8959608553893514,
+            "correlation": 0.9552273057389266,
+            "num_samples": 264
+          },
+          "xuhui": {
+            "mae": 1.7383236635380561,
+            "rmse": 2.5348503932663258,
+            "mse": 6.425466516242447,
+            "mape": 16.06824351444933,
+            "r2_score": 0.7216697774335262,
+            "correlation": 0.8590452322997258,
+            "num_samples": 73
+          },
+          "zhongshan": {
+            "mae": 1.1500027995381683,
+            "rmse": 1.5444062513926127,
+            "mse": 2.3851906693405818,
+            "mape": 7.957548212444525,
+            "r2_score": 0.8313802264875803,
+            "correlation": 0.9153529177932117,
+            "num_samples": 50
+          }
+        },
+        "macro": {
+          "rmse": 1.649548397395194,
+          "mae": 1.1861581280751456
+        },
+        "rmse_gap": 1.6654618457396824
+      },
+      "center_metrics_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_prototype_align/seed_17/artifacts/cpet_former_prototype_align/results/test_center_metrics.json",
+      "selected_seed": "17",
+      "rank": 5
+    },
+    {
+      "arch": "cpet_former_center_aware_mixstyle",
+      "seed": "17",
+      "mae": 0.9482711477621852,
+      "r2_score": 0.8264438544589432,
+      "rmse": 1.4510121249751906,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_center_aware_mixstyle/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_center_aware_mixstyle/seed_17/artifacts/cpet_former_center_aware_mixstyle/results",
+      "center_metrics": {
+        "per_center": {
+          "shanxi": {
+            "mae": 0.6571255155772189,
+            "rmse": 0.8529292853461369,
+            "mse": 0.7274883658010718,
+            "mape": 5.768388028617228,
+            "r2_score": 0.899862903362806,
+            "correlation": 0.9516398574773877,
+            "num_samples": 264
+          },
+          "xuhui": {
+            "mae": 1.8406388300787564,
+            "rmse": 2.6582121371415774,
+            "mse": 7.0660917660467915,
+            "mape": 16.064020779948066,
+            "r2_score": 0.6939199840280168,
+            "correlation": 0.8358691604598281,
+            "num_samples": 73
+          },
+          "zhongshan": {
+            "mae": 1.1826632695166128,
+            "rmse": 1.4623417986803453,
+            "mse": 2.1384435361676677,
+            "mape": 8.449234318883324,
+            "r2_score": 0.8488238825630747,
+            "correlation": 0.9253071500718303,
+            "num_samples": 50
+          }
+        },
+        "macro": {
+          "rmse": 1.6578277403893533,
+          "mae": 1.2268092050575292
+        },
+        "rmse_gap": 1.8052828517954405
+      },
+      "center_metrics_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_center_aware_mixstyle/seed_17/artifacts/cpet_former_center_aware_mixstyle/results/test_center_metrics.json",
+      "selected_seed": "17",
+      "rank": 6
+    },
+    {
+      "arch": "cpet_former_mixstyle",
+      "seed": "17",
+      "mae": 0.9562598096478426,
+      "r2_score": 0.8204334028587444,
+      "rmse": 1.4759234044711782,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_mixstyle/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_mixstyle/seed_17/artifacts/cpet_former_mixstyle/results",
+      "center_metrics": {
+        "per_center": {
+          "shanxi": {
+            "mae": 0.6825249926383493,
+            "rmse": 0.8934909915725467,
+            "mse": 0.7983261520212929,
+            "mape": 6.053221394822228,
+            "r2_score": 0.8901122453760103,
+            "correlation": 0.9476115292058136,
+            "num_samples": 264
+          },
+          "xuhui": {
+            "mae": 1.7799536273994951,
+            "rmse": 2.6518245053166836,
+            "mse": 7.032173206998073,
+            "mape": 16.350876272709186,
+            "r2_score": 0.6953892252209014,
+            "correlation": 0.8420729494282907,
+            "num_samples": 73
+          },
+          "zhongshan": {
+            "mae": 1.1989866695405542,
+            "rmse": 1.5421715952226667,
+            "mse": 2.378293229111624,
+            "mape": 8.518054470844676,
+            "r2_score": 0.8318678373206143,
+            "correlation": 0.913266299526943,
+            "num_samples": 50
+          }
+        },
+        "macro": {
+          "rmse": 1.6958290307039656,
+          "mae": 1.2204884298594663
+        },
+        "rmse_gap": 1.758333513744137
+      },
+      "center_metrics_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_mixstyle/seed_17/artifacts/cpet_former_mixstyle/results/test_center_metrics.json",
+      "selected_seed": "17",
+      "rank": 7
+    },
+    {
+      "arch": "cpet_former_dann_regression",
+      "seed": "17",
+      "mae": 1.0361267193443202,
+      "r2_score": 0.7969078904299269,
+      "rmse": 1.5696310046533573,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_dann_regression/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_dann_regression/seed_17/artifacts/cpet_former_dann_regression/results",
+      "center_metrics": {
+        "per_center": {
+          "shanxi": {
+            "mae": 0.683493029579324,
+            "rmse": 0.9122052683114916,
+            "mse": 0.8321184515352403,
+            "mape": 5.748481352943998,
+            "r2_score": 0.8854608132417039,
+            "correlation": 0.9496726511533147,
+            "num_samples": 264
+          },
+          "xuhui": {
+            "mae": 1.9586147632693776,
+            "rmse": 2.7815445625010287,
+            "mse": 7.736990153179039,
+            "mape": 16.585271486445514,
+            "r2_score": 0.664858857191859,
+            "correlation": 0.8176469208236179,
+            "num_samples": 73
+          },
+          "zhongshan": {
+            "mae": 1.5512000571729172,
+            "rmse": 1.8384145590169327,
+            "mse": 3.3797680908054235,
+            "mape": 10.967646509793575,
+            "r2_score": 0.7610691097690445,
+            "correlation": 0.8992989389218036,
+            "num_samples": 50
+          }
+        },
+        "macro": {
+          "rmse": 1.8440547966098177,
+          "mae": 1.3977692833405395
+        },
+        "rmse_gap": 1.869339294189537
+      },
+      "center_metrics_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage1/cpet_former_dann_regression/seed_17/artifacts/cpet_former_dann_regression/results/test_center_metrics.json",
+      "selected_seed": "17",
+      "rank": 8
+    }
+  ]
+}

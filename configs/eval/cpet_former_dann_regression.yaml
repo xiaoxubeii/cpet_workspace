@@ -1,0 +1,7 @@
+include:
+  - "${CONFIGS_DIR}/model/cpet_former_dann_regression.yaml"
+  - "${CONFIGS_DIR}/common/eval/all.yaml"
+
+# Ensure evaluation keeps centre labels so per-centre metrics are available.
+center_columns:
+  - Institute_Name

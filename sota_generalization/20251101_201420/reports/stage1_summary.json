@@ -1,0 +1,18 @@
+{
+  "stage": "stage1",
+  "generated_at": "2025-11-01T12:14:24.919119+00:00",
+  "top_k": 3,
+  "entries": [
+    {
+      "arch": "cpet_former",
+      "seed": "17",
+      "mae": 9.882324068362896,
+      "r2_score": -7.250567319837209,
+      "rmse": 10.560373708563997,
+      "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_201420/stage1/cpet_former/seed_17",
+      "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_201420/stage1/cpet_former/seed_17/artifacts/cpet_former/results",
+      "selected_seed": "17",
+      "rank": 1
+    }
+  ]
+}

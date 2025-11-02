@@ -1,0 +1,13 @@
+# Consistency-regularised variant with stochastic augmentations
+
+include:
+  - "./cpet_former_generalization_base.yaml"
+
+model:
+  name: "cpet_former_consistency_regularized"
+  consistency_noise_std: 0.05
+  consistency_dropout: 0.1
+  consistency_mixstyle_p: 0.5
+  consistency_mixstyle_alpha: 0.3
+
+consistency_loss_weight: 0.5

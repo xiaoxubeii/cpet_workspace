@@ -1,0 +1,7 @@
+include:
+- /home/cheng/workspace/cpetx_workspace/cpaformer_cpet/configs/model/cpa_former_tuned.yaml
+head_loss_weights:
+  phase_0: 1.6
+  phase_1: 1.4
+  phase_2: 0.9
+device: cpu

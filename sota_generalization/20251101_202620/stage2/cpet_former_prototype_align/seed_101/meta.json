@@ -1,0 +1,8 @@
+{
+  "arch": "cpet_former_prototype_align",
+  "combo": "stage2_lr4e-5_wd1e-6_clip0.5_seed101",
+  "learning_rate": 4e-05,
+  "weight_decay": 1e-06,
+  "grad_clip": 0.5,
+  "stage": "stage2"
+}

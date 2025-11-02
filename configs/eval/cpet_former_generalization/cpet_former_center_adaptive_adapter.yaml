@@ -1,0 +1,5 @@
+# Evaluation config for centre-adaptive adapter variant
+
+include:
+  - "${CONFIGS_DIR}/model/cpet_former_center_adaptive_adapter.yaml"
+  - "./base.yaml"

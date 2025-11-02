@@ -1,0 +1,31 @@
+{
+  "run_info": {
+    "result_dir": "/home/cheng/workspace/cpetx_workspace/cpaformer_cpet/tmp_smoke_full_grid/p01.6_p11.4_p20.9/train/artifacts",
+    "run_dir": "/home/cheng/workspace/cpetx_workspace/cpaformer_cpet/tmp_smoke_full_grid/p01.6_p11.4_p20.9/train",
+    "summary_time": "2025-10-29T00:29:43.406360",
+    "description": ""
+  },
+  "models": {
+    "cpa_former": {
+      "cpa_former": {
+        "model_path": "/home/cheng/workspace/cpetx_workspace/cpaformer_cpet/tmp_smoke_full_grid/p01.6_p11.4_p20.9/train/artifacts/cpa_former",
+        "metrics": {
+          "test_metrics": {
+            "mae": 10.90060806274414,
+            "rmse": 11.490217208862305,
+            "mse": 132.02508544921875,
+            "correlation": 0.156844774521794,
+            "r2_score": -8.767461776733398,
+            "mape": 82.1302261352539,
+            "num_samples": 130
+          },
+          "num_samples": 130,
+          "timestamp": "2025-10-29T00:29:43.391111"
+        },
+        "config_file": null,
+        "training_time": null
+      }
+    }
+  },
+  "overall_stats": {}
+}

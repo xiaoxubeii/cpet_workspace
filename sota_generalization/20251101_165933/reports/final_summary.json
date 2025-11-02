@@ -1,0 +1,20 @@
+{
+  "generated_at": "2025-11-01T08:59:33.191905+00:00",
+  "stage1": {
+    "stage": "stage1",
+    "generated_at": "2025-11-01T08:59:33.065461+00:00",
+    "top_k": 0,
+    "entries": []
+  },
+  "stage2": {
+    "stage": "stage2",
+    "generated_at": "2025-11-01T08:59:33.101053+00:00",
+    "top_k": 0,
+    "entries": []
+  },
+  "stage3": {
+    "stage": "stage3",
+    "generated_at": "2025-11-01T08:59:33.155209+00:00",
+    "entries": []
+  }
+}

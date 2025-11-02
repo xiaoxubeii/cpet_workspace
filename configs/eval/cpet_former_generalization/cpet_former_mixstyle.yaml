@@ -1,0 +1,5 @@
+# Evaluation config for CPETFormer MixStyle variant
+
+include:
+  - "${CONFIGS_DIR}/model/cpet_former_mixstyle.yaml"
+  - "./base.yaml"

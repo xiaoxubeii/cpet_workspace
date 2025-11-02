@@ -1,0 +1,5 @@
+# Evaluation config for consistency-regularised variant
+
+include:
+  - "${CONFIGS_DIR}/model/cpet_former_consistency_regularized.yaml"
+  - "./base.yaml"

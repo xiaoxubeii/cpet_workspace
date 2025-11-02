@@ -1,0 +1,9 @@
+# Centre-conditioned layer norm variant to suppress site shifts
+
+include:
+  - "./cpet_former_generalization_base.yaml"
+
+model:
+  name: "cpet_former_center_invariant_layer_norm"
+  num_centers: ${NUM_CENTERS:8}
+  center_norm_dropout: 0.1

@@ -1,0 +1,744 @@
+generated_at: '2025-11-01T12:27:22Z'
+scope: selected
+dry_run: false
+experiment:
+  name: cpetformer_generalization_screen
+  description: null
+  home: /home/cheng/workspace/cpetx_workspace/cpet_former
+  run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620
+  default_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620
+  logs_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/logs
+  artifacts_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/artifacts
+  configs_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/configs
+  config_path: /home/cheng/workspace/cpetx_workspace/cpet_former/pipelines/generalization_pipeline.yaml
+run:
+  status: completed
+  run_id: 37
+  sequence: 36
+  started_at: '2025-11-01T12:26:20Z'
+  finished_at: '2025-11-01T12:27:22Z'
+  updated_at: '2025-11-01T12:27:22Z'
+  current_step: null
+  current_stage: completed
+  last_error: null
+  last_completed_step: collect-reports
+  duration_seconds: 62.0
+variables:
+  RUNS_DIR: '{EXPERIMENT_HOME}/sota_generalization'
+  RUN_DIR: '{RUNS_DIR}/{RUN_TS}'
+  BEST_DIR: '{RUNS_DIR}/best'
+  rank_scan_all: 'false'
+  model_list: cpet_former_dann_regression cpet_former_mixstyle cpet_former_center_aware_mixstyle
+    cpet_former_prototype_align cpet_former_center_invariant_layer_norm cpet_former_center_adaptive_adapter
+    cpet_former_stochastic_router cpet_former_consistency_regularized
+  data_file: /home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5
+  subset_data_file: /home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5
+  stage1_data_file: '{subset_data_file}'
+  stage2_data_file: '{data_file}'
+  stage1_epochs: '1'
+  stage1_lr: 7e-5
+  stage1_weight_decay: 1e-6
+  stage1_grad_clip: '0.5'
+  stage1_batch: '48'
+  stage1_seed: '17'
+  stage2_epochs: '1'
+  stage2_lr: 4e-5
+  stage2_weight_decay: 1e-6
+  stage2_grad_clip: '0.5'
+  stage2_batch: '64'
+  stage2_seeds: 42 101
+  stage2_top_k: '3'
+  RUN_TS: '20251101_202620'
+environment:
+  PYTHONUNBUFFERED: '1'
+  PYTHONPATH: /home/cheng/workspace/cpetx_workspace/cpet_former/src
+  CPETX_PROJECT_ROOT: /home/cheng/workspace/cpetx_workspace/cpet_former
+  CONFIGS_DIR: /home/cheng/workspace/cpetx_workspace/cpet_former/configs
+overrides: {}
+steps:
+- id: prepare-run
+  index: 1
+  type: shell
+  description: Initialise generalization sweep run directory.
+  depends_on: []
+  workdir: /home/cheng/workspace/cpetx_workspace/cpet_former
+  step_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/prepare-run
+  resolved_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620
+  env: {}
+  command:
+    display: 'set -euo pipefail
+
+      mkdir -p "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620"
+      "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/reports"
+      "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/prepare-run"
+
+      echo "cpet_former_dann_regression cpet_former_mixstyle cpet_former_center_aware_mixstyle
+      cpet_former_prototype_align cpet_former_center_invariant_layer_norm cpet_former_center_adaptive_adapter
+      cpet_former_stochastic_router cpet_former_consistency_regularized" > "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/prepare-run/models.txt"
+
+      '
+    args:
+    - 'set -euo pipefail
+
+      mkdir -p "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620"
+      "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/reports"
+      "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/prepare-run"
+
+      echo "cpet_former_dann_regression cpet_former_mixstyle cpet_former_center_aware_mixstyle
+      cpet_former_prototype_align cpet_former_center_invariant_layer_norm cpet_former_center_adaptive_adapter
+      cpet_former_stochastic_router cpet_former_consistency_regularized" > "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/prepare-run/models.txt"
+
+      '
+    shell: true
+    shell_command: 'set -euo pipefail
+
+      mkdir -p "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620"
+      "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/reports"
+      "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/prepare-run"
+
+      echo "cpet_former_dann_regression cpet_former_mixstyle cpet_former_center_aware_mixstyle
+      cpet_former_prototype_align cpet_former_center_invariant_layer_norm cpet_former_center_adaptive_adapter
+      cpet_former_stochastic_router cpet_former_consistency_regularized" > "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/prepare-run/models.txt"
+
+      '
+  resources: []
+  log: /home/cheng/workspace/cpetx_workspace/cpet_former/logs/prepare-run.log
+  when:
+    value: true
+    resolved: true
+  status: completed
+  times:
+    started_at: '2025-11-01T12:26:20Z'
+    finished_at: '2025-11-01T12:26:20Z'
+    updated_at: '2025-11-01T12:26:20Z'
+    duration_seconds: 0.0
+- id: stage1-train
+  index: 2
+  type: shell
+  description: Stage 1 – fast screening (single seed, short epochs).
+  depends_on:
+  - prepare-run
+  workdir: /home/cheng/workspace/cpetx_workspace/cpet_former
+  step_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1-train
+  resolved_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620
+  env: {}
+  command:
+    display: "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1\"\
+      \nDATA_FILE=\"/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5\"\
+      \nif [ ! -f \"${DATA_FILE}\" ]; then\n  echo \"[stage1] data file ${DATA_FILE}\
+      \ not found.\"\n  exit 1\nfi\nread -r MODELS < \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/prepare-run/models.txt\"\
+      \nfor ARCH in ${MODELS}; do\n  [ -z \"${ARCH}\" ] && continue\n  RUN_ROOT=\"\
+      /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/${ARCH}/seed_17\"\
+      \n  mkdir -p \"${RUN_ROOT}/artifacts\" \"${RUN_ROOT}/logs\"\n  COMBO=\"stage1_lr7e-5_wd1e-6_clip0.5_seed17\"\
+      \n  echo \"[stage1] Train ${ARCH} (seed 17)\"\n  WEIGHT_DECAY=1e-6 GRAD_CLIP_MAX_NORM=0.5\
+      \ \\\n    PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src python\
+      \ /home/cheng/workspace/cpetx_workspace/cpet_former/src/vox_cpet/cmd/cpetx-model\
+      \ train \\\n      --data-file \"${DATA_FILE}\" \\\n      --conf /home/cheng/workspace/cpetx_workspace/cpet_former/configs/model\
+      \ \\\n      --filter \"^${ARCH}$\" \\\n      --run-dir \"${RUN_ROOT}\" \\\n\
+      \      --save-dir \"${RUN_ROOT}/artifacts\" \\\n      --log-dir \"${RUN_ROOT}/logs\"\
+      \ \\\n      --task-id \"stage1-train_${ARCH}_stage1\" \\\n      --num-epochs\
+      \ \"1\" \\\n      --learning-rate \"7e-5\" \\\n      --batch-size \"48\" \\\n\
+      \      --seed \"17\"\n  PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src\
+      \ python /home/cheng/workspace/cpetx_workspace/cpet_former/src/scripts/pipeline_tasks.py\
+      \ write-meta \\\n      --run-root \"${RUN_ROOT}\" \\\n      --arch \"${ARCH}\"\
+      \ \\\n      --combo \"${COMBO}\" \\\n      --learning-rate \"7e-5\" \\\n   \
+      \   --weight-decay \"1e-6\" \\\n      --grad-clip \"0.5\" \\\n      --stage\
+      \ \"stage1\"\ndone\n"
+    args:
+    - "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1\"\
+      \nDATA_FILE=\"/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5\"\
+      \nif [ ! -f \"${DATA_FILE}\" ]; then\n  echo \"[stage1] data file ${DATA_FILE}\
+      \ not found.\"\n  exit 1\nfi\nread -r MODELS < \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/prepare-run/models.txt\"\
+      \nfor ARCH in ${MODELS}; do\n  [ -z \"${ARCH}\" ] && continue\n  RUN_ROOT=\"\
+      /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/${ARCH}/seed_17\"\
+      \n  mkdir -p \"${RUN_ROOT}/artifacts\" \"${RUN_ROOT}/logs\"\n  COMBO=\"stage1_lr7e-5_wd1e-6_clip0.5_seed17\"\
+      \n  echo \"[stage1] Train ${ARCH} (seed 17)\"\n  WEIGHT_DECAY=1e-6 GRAD_CLIP_MAX_NORM=0.5\
+      \ \\\n    PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src python\
+      \ /home/cheng/workspace/cpetx_workspace/cpet_former/src/vox_cpet/cmd/cpetx-model\
+      \ train \\\n      --data-file \"${DATA_FILE}\" \\\n      --conf /home/cheng/workspace/cpetx_workspace/cpet_former/configs/model\
+      \ \\\n      --filter \"^${ARCH}$\" \\\n      --run-dir \"${RUN_ROOT}\" \\\n\
+      \      --save-dir \"${RUN_ROOT}/artifacts\" \\\n      --log-dir \"${RUN_ROOT}/logs\"\
+      \ \\\n      --task-id \"stage1-train_${ARCH}_stage1\" \\\n      --num-epochs\
+      \ \"1\" \\\n      --learning-rate \"7e-5\" \\\n      --batch-size \"48\" \\\n\
+      \      --seed \"17\"\n  PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src\
+      \ python /home/cheng/workspace/cpetx_workspace/cpet_former/src/scripts/pipeline_tasks.py\
+      \ write-meta \\\n      --run-root \"${RUN_ROOT}\" \\\n      --arch \"${ARCH}\"\
+      \ \\\n      --combo \"${COMBO}\" \\\n      --learning-rate \"7e-5\" \\\n   \
+      \   --weight-decay \"1e-6\" \\\n      --grad-clip \"0.5\" \\\n      --stage\
+      \ \"stage1\"\ndone\n"
+    shell: true
+    shell_command: "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1\"\
+      \nDATA_FILE=\"/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5\"\
+      \nif [ ! -f \"${DATA_FILE}\" ]; then\n  echo \"[stage1] data file ${DATA_FILE}\
+      \ not found.\"\n  exit 1\nfi\nread -r MODELS < \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/prepare-run/models.txt\"\
+      \nfor ARCH in ${MODELS}; do\n  [ -z \"${ARCH}\" ] && continue\n  RUN_ROOT=\"\
+      /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/${ARCH}/seed_17\"\
+      \n  mkdir -p \"${RUN_ROOT}/artifacts\" \"${RUN_ROOT}/logs\"\n  COMBO=\"stage1_lr7e-5_wd1e-6_clip0.5_seed17\"\
+      \n  echo \"[stage1] Train ${ARCH} (seed 17)\"\n  WEIGHT_DECAY=1e-6 GRAD_CLIP_MAX_NORM=0.5\
+      \ \\\n    PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src python\
+      \ /home/cheng/workspace/cpetx_workspace/cpet_former/src/vox_cpet/cmd/cpetx-model\
+      \ train \\\n      --data-file \"${DATA_FILE}\" \\\n      --conf /home/cheng/workspace/cpetx_workspace/cpet_former/configs/model\
+      \ \\\n      --filter \"^${ARCH}$\" \\\n      --run-dir \"${RUN_ROOT}\" \\\n\
+      \      --save-dir \"${RUN_ROOT}/artifacts\" \\\n      --log-dir \"${RUN_ROOT}/logs\"\
+      \ \\\n      --task-id \"stage1-train_${ARCH}_stage1\" \\\n      --num-epochs\
+      \ \"1\" \\\n      --learning-rate \"7e-5\" \\\n      --batch-size \"48\" \\\n\
+      \      --seed \"17\"\n  PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src\
+      \ python /home/cheng/workspace/cpetx_workspace/cpet_former/src/scripts/pipeline_tasks.py\
+      \ write-meta \\\n      --run-root \"${RUN_ROOT}\" \\\n      --arch \"${ARCH}\"\
+      \ \\\n      --combo \"${COMBO}\" \\\n      --learning-rate \"7e-5\" \\\n   \
+      \   --weight-decay \"1e-6\" \\\n      --grad-clip \"0.5\" \\\n      --stage\
+      \ \"stage1\"\ndone\n"
+  resources: []
+  log: /home/cheng/workspace/cpetx_workspace/cpet_former/logs/stage1-train.log
+  when:
+    value: true
+    resolved: true
+  status: completed
+  times:
+    started_at: '2025-11-01T12:26:20Z'
+    finished_at: '2025-11-01T12:26:55Z'
+    updated_at: '2025-11-01T12:26:55Z'
+    duration_seconds: 35.0
+- id: stage1-summary
+  index: 3
+  type: shell
+  description: Aggregate Stage 1 metrics and choose candidates for Stage 2.
+  depends_on:
+  - stage1-train
+  workdir: /home/cheng/workspace/cpetx_workspace/cpet_former
+  step_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1-summary
+  resolved_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620
+  env: {}
+  command:
+    display: "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/summary\"\
+      \npython - <<'PY'\nimport json\nfrom datetime import datetime, timezone\nfrom\
+      \ pathlib import Path\n\ndef load_metrics(run_root: Path, arch: str):\n    candidates\
+      \ = [\n        run_root / \"artifacts\" / arch / \"results\" / \"test_final_results.json\"\
+      ,\n        run_root / \"artifacts\" / \"results\" / \"test_final_results.json\"\
+      ,\n        run_root / \"results\" / \"test_final_results.json\",\n    ]\n  \
+      \  if run_root.is_dir():\n        for extra in run_root.glob(\"**/test_final_results.json\"\
+      ):\n            if extra not in candidates:\n                candidates.append(extra)\n\
+      \    for candidate in candidates:\n        if not candidate.is_file():\n   \
+      \         continue\n        try:\n            payload = json.loads(candidate.read_text(encoding=\"\
+      utf-8\"))\n        except json.JSONDecodeError:\n            continue\n    \
+      \    metrics = payload.get(\"test_metrics\", payload)\n        try:\n      \
+      \      mae = float(metrics[\"mae\"])\n            r2 = float(metrics[\"r2_score\"\
+      ])\n        except (KeyError, TypeError, ValueError):\n            continue\n\
+      \        rmse_val = metrics.get(\"rmse\")\n        rmse = float(rmse_val) if\
+      \ rmse_val is not None else None\n        return {\"mae\": mae, \"r2_score\"\
+      : r2, \"rmse\": rmse, \"eval_path\": str(candidate.parent)}\n    return None\n\
+      \nrun_dir = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      )\nstage_dir = run_dir / \"stage1\"\nentries = []\nfor arch_dir in sorted(stage_dir.glob(\"\
+      *\")):\n    if not arch_dir.is_dir():\n        continue\n    arch = arch_dir.name\n\
+      \    best = None\n    best_seed = \"\"\n    for seed_dir in sorted(arch_dir.glob(\"\
+      seed_*\")):\n        metrics = load_metrics(seed_dir, arch)\n        if not\
+      \ metrics:\n            continue\n        seed = seed_dir.name.replace(\"seed_\"\
+      , \"\")\n        entry = {\n            \"arch\": arch,\n            \"seed\"\
+      : seed,\n            \"mae\": metrics[\"mae\"],\n            \"r2_score\": metrics[\"\
+      r2_score\"],\n            \"rmse\": metrics[\"rmse\"],\n            \"run_dir\"\
+      : str(seed_dir),\n            \"eval_path\": metrics[\"eval_path\"],\n     \
+      \   }\n        if best is None or metrics[\"mae\"] < best[\"mae\"] or (\n  \
+      \          metrics[\"mae\"] == best[\"mae\"] and metrics[\"r2_score\"] > best[\"\
+      r2_score\"]\n        ):\n            best = entry\n            best_seed = seed\n\
+      \    if best:\n        best[\"selected_seed\"] = best_seed\n        entries.append(best)\n\
+      \nentries.sort(key=lambda item: (item[\"mae\"], -item[\"r2_score\"]))\nfor rank,\
+      \ entry in enumerate(entries, start=1):\n    entry[\"rank\"] = rank\n\nsummary\
+      \ = {\n    \"stage\": \"stage1\",\n    \"generated_at\": datetime.now(timezone.utc).isoformat(),\n\
+      \    \"top_k\": int(\"3\"),\n    \"entries\": entries,\n}\n\nsummary_path =\
+      \ Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      ) / \"stage1\" / \"summary\" / \"stage1_summary.json\"\nsummary_path.write_text(json.dumps(summary,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\ntop_k = max(1, int(\"\
+      3\"))\ntop_models = [entry[\"arch\"] for entry in entries[:top_k]]\ntop_file\
+      \ = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      ) / \"stage1_top_models.txt\"\ntop_file.write_text(\"\\n\".join(top_models),\
+      \ encoding=\"utf-8\")\nPY\n"
+    args:
+    - "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/summary\"\
+      \npython - <<'PY'\nimport json\nfrom datetime import datetime, timezone\nfrom\
+      \ pathlib import Path\n\ndef load_metrics(run_root: Path, arch: str):\n    candidates\
+      \ = [\n        run_root / \"artifacts\" / arch / \"results\" / \"test_final_results.json\"\
+      ,\n        run_root / \"artifacts\" / \"results\" / \"test_final_results.json\"\
+      ,\n        run_root / \"results\" / \"test_final_results.json\",\n    ]\n  \
+      \  if run_root.is_dir():\n        for extra in run_root.glob(\"**/test_final_results.json\"\
+      ):\n            if extra not in candidates:\n                candidates.append(extra)\n\
+      \    for candidate in candidates:\n        if not candidate.is_file():\n   \
+      \         continue\n        try:\n            payload = json.loads(candidate.read_text(encoding=\"\
+      utf-8\"))\n        except json.JSONDecodeError:\n            continue\n    \
+      \    metrics = payload.get(\"test_metrics\", payload)\n        try:\n      \
+      \      mae = float(metrics[\"mae\"])\n            r2 = float(metrics[\"r2_score\"\
+      ])\n        except (KeyError, TypeError, ValueError):\n            continue\n\
+      \        rmse_val = metrics.get(\"rmse\")\n        rmse = float(rmse_val) if\
+      \ rmse_val is not None else None\n        return {\"mae\": mae, \"r2_score\"\
+      : r2, \"rmse\": rmse, \"eval_path\": str(candidate.parent)}\n    return None\n\
+      \nrun_dir = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      )\nstage_dir = run_dir / \"stage1\"\nentries = []\nfor arch_dir in sorted(stage_dir.glob(\"\
+      *\")):\n    if not arch_dir.is_dir():\n        continue\n    arch = arch_dir.name\n\
+      \    best = None\n    best_seed = \"\"\n    for seed_dir in sorted(arch_dir.glob(\"\
+      seed_*\")):\n        metrics = load_metrics(seed_dir, arch)\n        if not\
+      \ metrics:\n            continue\n        seed = seed_dir.name.replace(\"seed_\"\
+      , \"\")\n        entry = {\n            \"arch\": arch,\n            \"seed\"\
+      : seed,\n            \"mae\": metrics[\"mae\"],\n            \"r2_score\": metrics[\"\
+      r2_score\"],\n            \"rmse\": metrics[\"rmse\"],\n            \"run_dir\"\
+      : str(seed_dir),\n            \"eval_path\": metrics[\"eval_path\"],\n     \
+      \   }\n        if best is None or metrics[\"mae\"] < best[\"mae\"] or (\n  \
+      \          metrics[\"mae\"] == best[\"mae\"] and metrics[\"r2_score\"] > best[\"\
+      r2_score\"]\n        ):\n            best = entry\n            best_seed = seed\n\
+      \    if best:\n        best[\"selected_seed\"] = best_seed\n        entries.append(best)\n\
+      \nentries.sort(key=lambda item: (item[\"mae\"], -item[\"r2_score\"]))\nfor rank,\
+      \ entry in enumerate(entries, start=1):\n    entry[\"rank\"] = rank\n\nsummary\
+      \ = {\n    \"stage\": \"stage1\",\n    \"generated_at\": datetime.now(timezone.utc).isoformat(),\n\
+      \    \"top_k\": int(\"3\"),\n    \"entries\": entries,\n}\n\nsummary_path =\
+      \ Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      ) / \"stage1\" / \"summary\" / \"stage1_summary.json\"\nsummary_path.write_text(json.dumps(summary,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\ntop_k = max(1, int(\"\
+      3\"))\ntop_models = [entry[\"arch\"] for entry in entries[:top_k]]\ntop_file\
+      \ = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      ) / \"stage1_top_models.txt\"\ntop_file.write_text(\"\\n\".join(top_models),\
+      \ encoding=\"utf-8\")\nPY\n"
+    shell: true
+    shell_command: "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1/summary\"\
+      \npython - <<'PY'\nimport json\nfrom datetime import datetime, timezone\nfrom\
+      \ pathlib import Path\n\ndef load_metrics(run_root: Path, arch: str):\n    candidates\
+      \ = [\n        run_root / \"artifacts\" / arch / \"results\" / \"test_final_results.json\"\
+      ,\n        run_root / \"artifacts\" / \"results\" / \"test_final_results.json\"\
+      ,\n        run_root / \"results\" / \"test_final_results.json\",\n    ]\n  \
+      \  if run_root.is_dir():\n        for extra in run_root.glob(\"**/test_final_results.json\"\
+      ):\n            if extra not in candidates:\n                candidates.append(extra)\n\
+      \    for candidate in candidates:\n        if not candidate.is_file():\n   \
+      \         continue\n        try:\n            payload = json.loads(candidate.read_text(encoding=\"\
+      utf-8\"))\n        except json.JSONDecodeError:\n            continue\n    \
+      \    metrics = payload.get(\"test_metrics\", payload)\n        try:\n      \
+      \      mae = float(metrics[\"mae\"])\n            r2 = float(metrics[\"r2_score\"\
+      ])\n        except (KeyError, TypeError, ValueError):\n            continue\n\
+      \        rmse_val = metrics.get(\"rmse\")\n        rmse = float(rmse_val) if\
+      \ rmse_val is not None else None\n        return {\"mae\": mae, \"r2_score\"\
+      : r2, \"rmse\": rmse, \"eval_path\": str(candidate.parent)}\n    return None\n\
+      \nrun_dir = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      )\nstage_dir = run_dir / \"stage1\"\nentries = []\nfor arch_dir in sorted(stage_dir.glob(\"\
+      *\")):\n    if not arch_dir.is_dir():\n        continue\n    arch = arch_dir.name\n\
+      \    best = None\n    best_seed = \"\"\n    for seed_dir in sorted(arch_dir.glob(\"\
+      seed_*\")):\n        metrics = load_metrics(seed_dir, arch)\n        if not\
+      \ metrics:\n            continue\n        seed = seed_dir.name.replace(\"seed_\"\
+      , \"\")\n        entry = {\n            \"arch\": arch,\n            \"seed\"\
+      : seed,\n            \"mae\": metrics[\"mae\"],\n            \"r2_score\": metrics[\"\
+      r2_score\"],\n            \"rmse\": metrics[\"rmse\"],\n            \"run_dir\"\
+      : str(seed_dir),\n            \"eval_path\": metrics[\"eval_path\"],\n     \
+      \   }\n        if best is None or metrics[\"mae\"] < best[\"mae\"] or (\n  \
+      \          metrics[\"mae\"] == best[\"mae\"] and metrics[\"r2_score\"] > best[\"\
+      r2_score\"]\n        ):\n            best = entry\n            best_seed = seed\n\
+      \    if best:\n        best[\"selected_seed\"] = best_seed\n        entries.append(best)\n\
+      \nentries.sort(key=lambda item: (item[\"mae\"], -item[\"r2_score\"]))\nfor rank,\
+      \ entry in enumerate(entries, start=1):\n    entry[\"rank\"] = rank\n\nsummary\
+      \ = {\n    \"stage\": \"stage1\",\n    \"generated_at\": datetime.now(timezone.utc).isoformat(),\n\
+      \    \"top_k\": int(\"3\"),\n    \"entries\": entries,\n}\n\nsummary_path =\
+      \ Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      ) / \"stage1\" / \"summary\" / \"stage1_summary.json\"\nsummary_path.write_text(json.dumps(summary,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\ntop_k = max(1, int(\"\
+      3\"))\ntop_models = [entry[\"arch\"] for entry in entries[:top_k]]\ntop_file\
+      \ = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      ) / \"stage1_top_models.txt\"\ntop_file.write_text(\"\\n\".join(top_models),\
+      \ encoding=\"utf-8\")\nPY\n"
+  resources: []
+  log: /home/cheng/workspace/cpetx_workspace/cpet_former/logs/stage1-summary.log
+  when:
+    value: true
+    resolved: true
+  status: completed
+  times:
+    started_at: '2025-11-01T12:26:55Z'
+    finished_at: '2025-11-01T12:26:55Z'
+    updated_at: '2025-11-01T12:26:55Z'
+    duration_seconds: 0.0
+- id: stage2-train
+  index: 4
+  type: shell
+  description: Stage 2 – full-length training with finalists.
+  depends_on:
+  - stage1-summary
+  workdir: /home/cheng/workspace/cpetx_workspace/cpet_former
+  step_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2-train
+  resolved_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620
+  env: {}
+  command:
+    display: "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2\"\
+      \nTOP_FILE=\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1_top_models.txt\"\
+      \nif [ ! -s \"${TOP_FILE}\" ]; then\n  echo \"[stage2] No Stage 1 top models.\
+      \ Skipping Stage 2.\"\nelse\n  MODELS=\"$(tr '\\n' ' ' < \"${TOP_FILE}\")\"\n\
+      \  DATA_FILE=\"/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5\"\
+      \n  if [ ! -f \"${DATA_FILE}\" ]; then\n    echo \"[stage2] data file ${DATA_FILE}\
+      \ not found.\"\n    exit 1\n  fi\n  for ARCH in ${MODELS}; do\n    [ -z \"${ARCH}\"\
+      \ ] && continue\n    for SEED in 42 101; do\n      RUN_ROOT=\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/${ARCH}/seed_${SEED}\"\
+      \n      mkdir -p \"${RUN_ROOT}/artifacts\" \"${RUN_ROOT}/logs\"\n      COMBO=\"\
+      stage2_lr4e-5_wd1e-6_clip0.5_seed${SEED}\"\n      echo \"[stage2] Train ${ARCH}\
+      \ (seed ${SEED})\"\n      WEIGHT_DECAY=1e-6 GRAD_CLIP_MAX_NORM=0.5 \\\n    \
+      \    PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src python\
+      \ /home/cheng/workspace/cpetx_workspace/cpet_former/src/vox_cpet/cmd/cpetx-model\
+      \ train \\\n          --data-file \"${DATA_FILE}\" \\\n          --conf /home/cheng/workspace/cpetx_workspace/cpet_former/configs/model\
+      \ \\\n          --filter \"^${ARCH}$\" \\\n          --run-dir \"${RUN_ROOT}\"\
+      \ \\\n          --save-dir \"${RUN_ROOT}/artifacts\" \\\n          --log-dir\
+      \ \"${RUN_ROOT}/logs\" \\\n          --task-id \"stage2-train_${ARCH}_stage2\"\
+      \ \\\n          --num-epochs \"1\" \\\n          --learning-rate \"4e-5\" \\\
+      \n          --batch-size \"64\" \\\n          --seed \"${SEED}\"\n      PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src\
+      \ python /home/cheng/workspace/cpetx_workspace/cpet_former/src/scripts/pipeline_tasks.py\
+      \ write-meta \\\n          --run-root \"${RUN_ROOT}\" \\\n          --arch \"\
+      ${ARCH}\" \\\n          --combo \"${COMBO}\" \\\n          --learning-rate \"\
+      4e-5\" \\\n          --weight-decay \"1e-6\" \\\n          --grad-clip \"0.5\"\
+      \ \\\n          --stage \"stage2\"\n    done\n  done\nfi\n"
+    args:
+    - "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2\"\
+      \nTOP_FILE=\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1_top_models.txt\"\
+      \nif [ ! -s \"${TOP_FILE}\" ]; then\n  echo \"[stage2] No Stage 1 top models.\
+      \ Skipping Stage 2.\"\nelse\n  MODELS=\"$(tr '\\n' ' ' < \"${TOP_FILE}\")\"\n\
+      \  DATA_FILE=\"/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5\"\
+      \n  if [ ! -f \"${DATA_FILE}\" ]; then\n    echo \"[stage2] data file ${DATA_FILE}\
+      \ not found.\"\n    exit 1\n  fi\n  for ARCH in ${MODELS}; do\n    [ -z \"${ARCH}\"\
+      \ ] && continue\n    for SEED in 42 101; do\n      RUN_ROOT=\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/${ARCH}/seed_${SEED}\"\
+      \n      mkdir -p \"${RUN_ROOT}/artifacts\" \"${RUN_ROOT}/logs\"\n      COMBO=\"\
+      stage2_lr4e-5_wd1e-6_clip0.5_seed${SEED}\"\n      echo \"[stage2] Train ${ARCH}\
+      \ (seed ${SEED})\"\n      WEIGHT_DECAY=1e-6 GRAD_CLIP_MAX_NORM=0.5 \\\n    \
+      \    PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src python\
+      \ /home/cheng/workspace/cpetx_workspace/cpet_former/src/vox_cpet/cmd/cpetx-model\
+      \ train \\\n          --data-file \"${DATA_FILE}\" \\\n          --conf /home/cheng/workspace/cpetx_workspace/cpet_former/configs/model\
+      \ \\\n          --filter \"^${ARCH}$\" \\\n          --run-dir \"${RUN_ROOT}\"\
+      \ \\\n          --save-dir \"${RUN_ROOT}/artifacts\" \\\n          --log-dir\
+      \ \"${RUN_ROOT}/logs\" \\\n          --task-id \"stage2-train_${ARCH}_stage2\"\
+      \ \\\n          --num-epochs \"1\" \\\n          --learning-rate \"4e-5\" \\\
+      \n          --batch-size \"64\" \\\n          --seed \"${SEED}\"\n      PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src\
+      \ python /home/cheng/workspace/cpetx_workspace/cpet_former/src/scripts/pipeline_tasks.py\
+      \ write-meta \\\n          --run-root \"${RUN_ROOT}\" \\\n          --arch \"\
+      ${ARCH}\" \\\n          --combo \"${COMBO}\" \\\n          --learning-rate \"\
+      4e-5\" \\\n          --weight-decay \"1e-6\" \\\n          --grad-clip \"0.5\"\
+      \ \\\n          --stage \"stage2\"\n    done\n  done\nfi\n"
+    shell: true
+    shell_command: "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2\"\
+      \nTOP_FILE=\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage1_top_models.txt\"\
+      \nif [ ! -s \"${TOP_FILE}\" ]; then\n  echo \"[stage2] No Stage 1 top models.\
+      \ Skipping Stage 2.\"\nelse\n  MODELS=\"$(tr '\\n' ' ' < \"${TOP_FILE}\")\"\n\
+      \  DATA_FILE=\"/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5\"\
+      \n  if [ ! -f \"${DATA_FILE}\" ]; then\n    echo \"[stage2] data file ${DATA_FILE}\
+      \ not found.\"\n    exit 1\n  fi\n  for ARCH in ${MODELS}; do\n    [ -z \"${ARCH}\"\
+      \ ] && continue\n    for SEED in 42 101; do\n      RUN_ROOT=\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/${ARCH}/seed_${SEED}\"\
+      \n      mkdir -p \"${RUN_ROOT}/artifacts\" \"${RUN_ROOT}/logs\"\n      COMBO=\"\
+      stage2_lr4e-5_wd1e-6_clip0.5_seed${SEED}\"\n      echo \"[stage2] Train ${ARCH}\
+      \ (seed ${SEED})\"\n      WEIGHT_DECAY=1e-6 GRAD_CLIP_MAX_NORM=0.5 \\\n    \
+      \    PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src python\
+      \ /home/cheng/workspace/cpetx_workspace/cpet_former/src/vox_cpet/cmd/cpetx-model\
+      \ train \\\n          --data-file \"${DATA_FILE}\" \\\n          --conf /home/cheng/workspace/cpetx_workspace/cpet_former/configs/model\
+      \ \\\n          --filter \"^${ARCH}$\" \\\n          --run-dir \"${RUN_ROOT}\"\
+      \ \\\n          --save-dir \"${RUN_ROOT}/artifacts\" \\\n          --log-dir\
+      \ \"${RUN_ROOT}/logs\" \\\n          --task-id \"stage2-train_${ARCH}_stage2\"\
+      \ \\\n          --num-epochs \"1\" \\\n          --learning-rate \"4e-5\" \\\
+      \n          --batch-size \"64\" \\\n          --seed \"${SEED}\"\n      PYTHONPATH=/home/cheng/workspace/cpetx_workspace/cpet_former/src\
+      \ python /home/cheng/workspace/cpetx_workspace/cpet_former/src/scripts/pipeline_tasks.py\
+      \ write-meta \\\n          --run-root \"${RUN_ROOT}\" \\\n          --arch \"\
+      ${ARCH}\" \\\n          --combo \"${COMBO}\" \\\n          --learning-rate \"\
+      4e-5\" \\\n          --weight-decay \"1e-6\" \\\n          --grad-clip \"0.5\"\
+      \ \\\n          --stage \"stage2\"\n    done\n  done\nfi\n"
+  resources: []
+  log: /home/cheng/workspace/cpetx_workspace/cpet_former/logs/stage2-train.log
+  when:
+    value: true
+    resolved: true
+  status: completed
+  times:
+    started_at: '2025-11-01T12:26:55Z'
+    finished_at: '2025-11-01T12:27:22Z'
+    updated_at: '2025-11-01T12:27:22Z'
+    duration_seconds: 27.0
+- id: stage2-summary
+  index: 5
+  type: shell
+  description: Aggregate Stage 3 metrics (mean ± std) for final ranking.
+  depends_on:
+  - stage2-train
+  workdir: /home/cheng/workspace/cpetx_workspace/cpet_former
+  step_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2-summary
+  resolved_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620
+  env: {}
+  command:
+    display: "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/summary\"\
+      \npython - <<'PY'\nimport json\nfrom datetime import datetime, timezone\nfrom\
+      \ pathlib import Path\nfrom statistics import mean, pstdev\n\ndef load_metrics(run_root:\
+      \ Path, arch: str):\n    candidates = [\n        run_root / \"artifacts\" /\
+      \ arch / \"results\" / \"test_final_results.json\",\n        run_root / \"artifacts\"\
+      \ / \"results\" / \"test_final_results.json\",\n        run_root / \"results\"\
+      \ / \"test_final_results.json\",\n    ]\n    if run_root.is_dir():\n       \
+      \ for extra in run_root.glob(\"**/test_final_results.json\"):\n            if\
+      \ extra not in candidates:\n                candidates.append(extra)\n    for\
+      \ candidate in candidates:\n        if not candidate.is_file():\n          \
+      \  continue\n        try:\n            payload = json.loads(candidate.read_text(encoding=\"\
+      utf-8\"))\n        except json.JSONDecodeError:\n            continue\n    \
+      \    metrics = payload.get(\"test_metrics\", payload)\n        try:\n      \
+      \      mae = float(metrics[\"mae\"])\n            r2 = float(metrics[\"r2_score\"\
+      ])\n        except (KeyError, TypeError, ValueError):\n            continue\n\
+      \        rmse_val = metrics.get(\"rmse\")\n        rmse = float(rmse_val) if\
+      \ rmse_val is not None else None\n        return {\"mae\": mae, \"r2_score\"\
+      : r2, \"rmse\": rmse, \"eval_path\": str(candidate.parent)}\n    return None\n\
+      \nrun_dir = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      )\nstage_dir = run_dir / \"stage2\"\naggregated = []\nfor arch_dir in sorted(stage_dir.glob(\"\
+      *\")):\n    if not arch_dir.is_dir():\n        continue\n    arch = arch_dir.name\n\
+      \    seeds = []\n    for seed_dir in sorted(arch_dir.glob(\"seed_*\")):\n  \
+      \      metrics = load_metrics(seed_dir, arch)\n        if not metrics:\n   \
+      \         continue\n        seed = seed_dir.name.replace(\"seed_\", \"\")\n\
+      \        seeds.append(\n            {\n                \"seed\": seed,\n   \
+      \             \"mae\": metrics[\"mae\"],\n                \"r2_score\": metrics[\"\
+      r2_score\"],\n                \"rmse\": metrics[\"rmse\"],\n               \
+      \ \"run_dir\": str(seed_dir),\n                \"eval_path\": metrics[\"eval_path\"\
+      ],\n            }\n        )\n    if not seeds:\n        continue\n    mae_values\
+      \ = [item[\"mae\"] for item in seeds]\n    r2_values = [item[\"r2_score\"] for\
+      \ item in seeds]\n    rmse_values = [item[\"rmse\"] for item in seeds if item[\"\
+      rmse\"] is not None]\n\n    def compute(values):\n        mean_val = mean(values)\n\
+      \        std_val = pstdev(values) if len(values) > 1 else 0.0\n        return\
+      \ mean_val, std_val\n\n    mae_mean, mae_std = compute(mae_values)\n    r2_mean,\
+      \ r2_std = compute(r2_values)\n    if rmse_values:\n        rmse_mean, rmse_std\
+      \ = compute(rmse_values)\n    else:\n        rmse_mean = rmse_std = None\n \
+      \   aggregated.append(\n        {\n            \"arch\": arch,\n           \
+      \ \"num_seeds\": len(seeds),\n            \"mae_mean\": mae_mean,\n        \
+      \    \"mae_std\": mae_std,\n            \"r2_mean\": r2_mean,\n            \"\
+      r2_std\": r2_std,\n            \"rmse_mean\": rmse_mean,\n            \"rmse_std\"\
+      : rmse_std,\n            \"seed_metrics\": seeds,\n        }\n    )\n\naggregated.sort(key=lambda\
+      \ item: (item[\"mae_mean\"], -item[\"r2_mean\"]))\nfor rank, entry in enumerate(aggregated,\
+      \ start=1):\n    entry[\"rank\"] = rank\n\nsummary = {\n    \"stage\": \"stage2\"\
+      ,\n    \"generated_at\": datetime.now(timezone.utc).isoformat(),\n    \"entries\"\
+      : aggregated,\n}\n\nsummary_path = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      ) / \"stage2\" / \"summary\" / \"stage2_summary.json\"\nsummary_path.write_text(json.dumps(summary,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\nPY\n"
+    args:
+    - "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/summary\"\
+      \npython - <<'PY'\nimport json\nfrom datetime import datetime, timezone\nfrom\
+      \ pathlib import Path\nfrom statistics import mean, pstdev\n\ndef load_metrics(run_root:\
+      \ Path, arch: str):\n    candidates = [\n        run_root / \"artifacts\" /\
+      \ arch / \"results\" / \"test_final_results.json\",\n        run_root / \"artifacts\"\
+      \ / \"results\" / \"test_final_results.json\",\n        run_root / \"results\"\
+      \ / \"test_final_results.json\",\n    ]\n    if run_root.is_dir():\n       \
+      \ for extra in run_root.glob(\"**/test_final_results.json\"):\n            if\
+      \ extra not in candidates:\n                candidates.append(extra)\n    for\
+      \ candidate in candidates:\n        if not candidate.is_file():\n          \
+      \  continue\n        try:\n            payload = json.loads(candidate.read_text(encoding=\"\
+      utf-8\"))\n        except json.JSONDecodeError:\n            continue\n    \
+      \    metrics = payload.get(\"test_metrics\", payload)\n        try:\n      \
+      \      mae = float(metrics[\"mae\"])\n            r2 = float(metrics[\"r2_score\"\
+      ])\n        except (KeyError, TypeError, ValueError):\n            continue\n\
+      \        rmse_val = metrics.get(\"rmse\")\n        rmse = float(rmse_val) if\
+      \ rmse_val is not None else None\n        return {\"mae\": mae, \"r2_score\"\
+      : r2, \"rmse\": rmse, \"eval_path\": str(candidate.parent)}\n    return None\n\
+      \nrun_dir = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      )\nstage_dir = run_dir / \"stage2\"\naggregated = []\nfor arch_dir in sorted(stage_dir.glob(\"\
+      *\")):\n    if not arch_dir.is_dir():\n        continue\n    arch = arch_dir.name\n\
+      \    seeds = []\n    for seed_dir in sorted(arch_dir.glob(\"seed_*\")):\n  \
+      \      metrics = load_metrics(seed_dir, arch)\n        if not metrics:\n   \
+      \         continue\n        seed = seed_dir.name.replace(\"seed_\", \"\")\n\
+      \        seeds.append(\n            {\n                \"seed\": seed,\n   \
+      \             \"mae\": metrics[\"mae\"],\n                \"r2_score\": metrics[\"\
+      r2_score\"],\n                \"rmse\": metrics[\"rmse\"],\n               \
+      \ \"run_dir\": str(seed_dir),\n                \"eval_path\": metrics[\"eval_path\"\
+      ],\n            }\n        )\n    if not seeds:\n        continue\n    mae_values\
+      \ = [item[\"mae\"] for item in seeds]\n    r2_values = [item[\"r2_score\"] for\
+      \ item in seeds]\n    rmse_values = [item[\"rmse\"] for item in seeds if item[\"\
+      rmse\"] is not None]\n\n    def compute(values):\n        mean_val = mean(values)\n\
+      \        std_val = pstdev(values) if len(values) > 1 else 0.0\n        return\
+      \ mean_val, std_val\n\n    mae_mean, mae_std = compute(mae_values)\n    r2_mean,\
+      \ r2_std = compute(r2_values)\n    if rmse_values:\n        rmse_mean, rmse_std\
+      \ = compute(rmse_values)\n    else:\n        rmse_mean = rmse_std = None\n \
+      \   aggregated.append(\n        {\n            \"arch\": arch,\n           \
+      \ \"num_seeds\": len(seeds),\n            \"mae_mean\": mae_mean,\n        \
+      \    \"mae_std\": mae_std,\n            \"r2_mean\": r2_mean,\n            \"\
+      r2_std\": r2_std,\n            \"rmse_mean\": rmse_mean,\n            \"rmse_std\"\
+      : rmse_std,\n            \"seed_metrics\": seeds,\n        }\n    )\n\naggregated.sort(key=lambda\
+      \ item: (item[\"mae_mean\"], -item[\"r2_mean\"]))\nfor rank, entry in enumerate(aggregated,\
+      \ start=1):\n    entry[\"rank\"] = rank\n\nsummary = {\n    \"stage\": \"stage2\"\
+      ,\n    \"generated_at\": datetime.now(timezone.utc).isoformat(),\n    \"entries\"\
+      : aggregated,\n}\n\nsummary_path = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      ) / \"stage2\" / \"summary\" / \"stage2_summary.json\"\nsummary_path.write_text(json.dumps(summary,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\nPY\n"
+    shell: true
+    shell_command: "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/stage2/summary\"\
+      \npython - <<'PY'\nimport json\nfrom datetime import datetime, timezone\nfrom\
+      \ pathlib import Path\nfrom statistics import mean, pstdev\n\ndef load_metrics(run_root:\
+      \ Path, arch: str):\n    candidates = [\n        run_root / \"artifacts\" /\
+      \ arch / \"results\" / \"test_final_results.json\",\n        run_root / \"artifacts\"\
+      \ / \"results\" / \"test_final_results.json\",\n        run_root / \"results\"\
+      \ / \"test_final_results.json\",\n    ]\n    if run_root.is_dir():\n       \
+      \ for extra in run_root.glob(\"**/test_final_results.json\"):\n            if\
+      \ extra not in candidates:\n                candidates.append(extra)\n    for\
+      \ candidate in candidates:\n        if not candidate.is_file():\n          \
+      \  continue\n        try:\n            payload = json.loads(candidate.read_text(encoding=\"\
+      utf-8\"))\n        except json.JSONDecodeError:\n            continue\n    \
+      \    metrics = payload.get(\"test_metrics\", payload)\n        try:\n      \
+      \      mae = float(metrics[\"mae\"])\n            r2 = float(metrics[\"r2_score\"\
+      ])\n        except (KeyError, TypeError, ValueError):\n            continue\n\
+      \        rmse_val = metrics.get(\"rmse\")\n        rmse = float(rmse_val) if\
+      \ rmse_val is not None else None\n        return {\"mae\": mae, \"r2_score\"\
+      : r2, \"rmse\": rmse, \"eval_path\": str(candidate.parent)}\n    return None\n\
+      \nrun_dir = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      )\nstage_dir = run_dir / \"stage2\"\naggregated = []\nfor arch_dir in sorted(stage_dir.glob(\"\
+      *\")):\n    if not arch_dir.is_dir():\n        continue\n    arch = arch_dir.name\n\
+      \    seeds = []\n    for seed_dir in sorted(arch_dir.glob(\"seed_*\")):\n  \
+      \      metrics = load_metrics(seed_dir, arch)\n        if not metrics:\n   \
+      \         continue\n        seed = seed_dir.name.replace(\"seed_\", \"\")\n\
+      \        seeds.append(\n            {\n                \"seed\": seed,\n   \
+      \             \"mae\": metrics[\"mae\"],\n                \"r2_score\": metrics[\"\
+      r2_score\"],\n                \"rmse\": metrics[\"rmse\"],\n               \
+      \ \"run_dir\": str(seed_dir),\n                \"eval_path\": metrics[\"eval_path\"\
+      ],\n            }\n        )\n    if not seeds:\n        continue\n    mae_values\
+      \ = [item[\"mae\"] for item in seeds]\n    r2_values = [item[\"r2_score\"] for\
+      \ item in seeds]\n    rmse_values = [item[\"rmse\"] for item in seeds if item[\"\
+      rmse\"] is not None]\n\n    def compute(values):\n        mean_val = mean(values)\n\
+      \        std_val = pstdev(values) if len(values) > 1 else 0.0\n        return\
+      \ mean_val, std_val\n\n    mae_mean, mae_std = compute(mae_values)\n    r2_mean,\
+      \ r2_std = compute(r2_values)\n    if rmse_values:\n        rmse_mean, rmse_std\
+      \ = compute(rmse_values)\n    else:\n        rmse_mean = rmse_std = None\n \
+      \   aggregated.append(\n        {\n            \"arch\": arch,\n           \
+      \ \"num_seeds\": len(seeds),\n            \"mae_mean\": mae_mean,\n        \
+      \    \"mae_std\": mae_std,\n            \"r2_mean\": r2_mean,\n            \"\
+      r2_std\": r2_std,\n            \"rmse_mean\": rmse_mean,\n            \"rmse_std\"\
+      : rmse_std,\n            \"seed_metrics\": seeds,\n        }\n    )\n\naggregated.sort(key=lambda\
+      \ item: (item[\"mae_mean\"], -item[\"r2_mean\"]))\nfor rank, entry in enumerate(aggregated,\
+      \ start=1):\n    entry[\"rank\"] = rank\n\nsummary = {\n    \"stage\": \"stage2\"\
+      ,\n    \"generated_at\": datetime.now(timezone.utc).isoformat(),\n    \"entries\"\
+      : aggregated,\n}\n\nsummary_path = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      ) / \"stage2\" / \"summary\" / \"stage2_summary.json\"\nsummary_path.write_text(json.dumps(summary,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\nPY\n"
+  resources: []
+  log: /home/cheng/workspace/cpetx_workspace/cpet_former/logs/stage2-summary.log
+  when:
+    value: true
+    resolved: true
+  status: completed
+  times:
+    started_at: '2025-11-01T12:27:22Z'
+    finished_at: '2025-11-01T12:27:22Z'
+    updated_at: '2025-11-01T12:27:22Z'
+    duration_seconds: 0.0
+- id: collect-reports
+  index: 6
+  type: shell
+  description: Assemble stage summaries and emit final report.
+  depends_on:
+  - stage2-summary
+  workdir: /home/cheng/workspace/cpetx_workspace/cpet_former
+  step_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/collect-reports
+  resolved_run_dir: /home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620
+  env: {}
+  command:
+    display: "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/reports\"\
+      \npython - <<'PY'\nimport json\nfrom datetime import datetime, timezone\nfrom\
+      \ pathlib import Path\n\nrun_dir = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      )\nreports_dir = run_dir / \"reports\"\nstage_files = {\n    \"stage1\": run_dir\
+      \ / \"stage1\" / \"summary\" / \"stage1_summary.json\",\n    \"stage2\": run_dir\
+      \ / \"stage2\" / \"summary\" / \"stage2_summary.json\",\n    \"stage2\": run_dir\
+      \ / \"stage2\" / \"summary\" / \"stage2_summary.json\",\n}\n\nfinal_payload\
+      \ = {\n    \"generated_at\": datetime.now(timezone.utc).isoformat(),\n}\n\n\
+      for stage, path in stage_files.items():\n    if not path.is_file():\n      \
+      \  continue\n    data = json.loads(path.read_text(encoding=\"utf-8\"))\n   \
+      \ final_payload[stage] = data\n    (reports_dir / path.name).write_text(json.dumps(data,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\nsummary_path = reports_dir\
+      \ / \"final_summary.json\"\nsummary_path.write_text(json.dumps(final_payload,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\ndef fmt(value):\n  \
+      \  if value is None:\n        return \"N/A\"\n    try:\n        return f\"{value:.4f}\"\
+      \n    except (TypeError, ValueError):\n        return str(value)\n\nlines =\
+      \ [\"# Generalization Sweep Summary\", \"\"]\nlines.append(f\"- Generated at\
+      \ {final_payload['generated_at']}\")\nlines.append(\"\")\nstage1 = final_payload.get(\"\
+      stage1\", {})\nentries1 = stage1.get(\"entries\", [])\nif entries1:\n    lines.extend([\"\
+      ## Stage 1 – Fast Screening\", \"\", \"| Rank | Model | Seed | MAE | R2 | RMSE\
+      \ |\", \"|---|---|---|---|---|---|\"])\n    for entry in entries1:\n       \
+      \ lines.append(\n            f\"| {entry.get('rank', '')} | {entry.get('arch',\
+      \ '')} | {entry.get('seed', '')} | {fmt(entry.get('mae'))} | {fmt(entry.get('r2_score'))}\
+      \ | {fmt(entry.get('rmse'))} |\"\n        )\n    lines.append(\"\")\nstage2\
+      \ = final_payload.get(\"stage2\", {})\nentries2 = stage2.get(\"entries\", [])\n\
+      if entries2:\n    lines.extend([\"## Stage 2 – Stability (mean +/- std)\", \"\
+      \", \"| Rank | Model | Seeds | MAE | R2 | RMSE |\", \"|---|---|---|---|---|---|\"\
+      ])\n    for entry in entries2:\n        mae = f\"{fmt(entry.get('mae_mean'))}\
+      \ +/- {fmt(entry.get('mae_std'))}\"\n        r2 = f\"{fmt(entry.get('r2_mean'))}\
+      \ +/- {fmt(entry.get('r2_std'))}\"\n        rmse_mean = entry.get(\"rmse_mean\"\
+      )\n        rmse_std = entry.get(\"rmse_std\")\n        rmse = \"N/A\"\n    \
+      \    if rmse_mean is not None:\n            rmse = f\"{fmt(rmse_mean)} +/- {fmt(rmse_std)}\"\
+      \n        lines.append(\n            f\"| {entry.get('rank', '')} | {entry.get('arch',\
+      \ '')} | {entry.get('num_seeds', '')} | {mae} | {r2} | {rmse} |\"\n        )\n\
+      \    lines.append(\"\")\n\n(reports_dir / \"final_summary.md\").write_text(\"\
+      \\n\".join(lines), encoding=\"utf-8\")\nPY\n"
+    args:
+    - "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/reports\"\
+      \npython - <<'PY'\nimport json\nfrom datetime import datetime, timezone\nfrom\
+      \ pathlib import Path\n\nrun_dir = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      )\nreports_dir = run_dir / \"reports\"\nstage_files = {\n    \"stage1\": run_dir\
+      \ / \"stage1\" / \"summary\" / \"stage1_summary.json\",\n    \"stage2\": run_dir\
+      \ / \"stage2\" / \"summary\" / \"stage2_summary.json\",\n    \"stage2\": run_dir\
+      \ / \"stage2\" / \"summary\" / \"stage2_summary.json\",\n}\n\nfinal_payload\
+      \ = {\n    \"generated_at\": datetime.now(timezone.utc).isoformat(),\n}\n\n\
+      for stage, path in stage_files.items():\n    if not path.is_file():\n      \
+      \  continue\n    data = json.loads(path.read_text(encoding=\"utf-8\"))\n   \
+      \ final_payload[stage] = data\n    (reports_dir / path.name).write_text(json.dumps(data,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\nsummary_path = reports_dir\
+      \ / \"final_summary.json\"\nsummary_path.write_text(json.dumps(final_payload,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\ndef fmt(value):\n  \
+      \  if value is None:\n        return \"N/A\"\n    try:\n        return f\"{value:.4f}\"\
+      \n    except (TypeError, ValueError):\n        return str(value)\n\nlines =\
+      \ [\"# Generalization Sweep Summary\", \"\"]\nlines.append(f\"- Generated at\
+      \ {final_payload['generated_at']}\")\nlines.append(\"\")\nstage1 = final_payload.get(\"\
+      stage1\", {})\nentries1 = stage1.get(\"entries\", [])\nif entries1:\n    lines.extend([\"\
+      ## Stage 1 – Fast Screening\", \"\", \"| Rank | Model | Seed | MAE | R2 | RMSE\
+      \ |\", \"|---|---|---|---|---|---|\"])\n    for entry in entries1:\n       \
+      \ lines.append(\n            f\"| {entry.get('rank', '')} | {entry.get('arch',\
+      \ '')} | {entry.get('seed', '')} | {fmt(entry.get('mae'))} | {fmt(entry.get('r2_score'))}\
+      \ | {fmt(entry.get('rmse'))} |\"\n        )\n    lines.append(\"\")\nstage2\
+      \ = final_payload.get(\"stage2\", {})\nentries2 = stage2.get(\"entries\", [])\n\
+      if entries2:\n    lines.extend([\"## Stage 2 – Stability (mean +/- std)\", \"\
+      \", \"| Rank | Model | Seeds | MAE | R2 | RMSE |\", \"|---|---|---|---|---|---|\"\
+      ])\n    for entry in entries2:\n        mae = f\"{fmt(entry.get('mae_mean'))}\
+      \ +/- {fmt(entry.get('mae_std'))}\"\n        r2 = f\"{fmt(entry.get('r2_mean'))}\
+      \ +/- {fmt(entry.get('r2_std'))}\"\n        rmse_mean = entry.get(\"rmse_mean\"\
+      )\n        rmse_std = entry.get(\"rmse_std\")\n        rmse = \"N/A\"\n    \
+      \    if rmse_mean is not None:\n            rmse = f\"{fmt(rmse_mean)} +/- {fmt(rmse_std)}\"\
+      \n        lines.append(\n            f\"| {entry.get('rank', '')} | {entry.get('arch',\
+      \ '')} | {entry.get('num_seeds', '')} | {mae} | {r2} | {rmse} |\"\n        )\n\
+      \    lines.append(\"\")\n\n(reports_dir / \"final_summary.md\").write_text(\"\
+      \\n\".join(lines), encoding=\"utf-8\")\nPY\n"
+    shell: true
+    shell_command: "set -euo pipefail\nmkdir -p \"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620/reports\"\
+      \npython - <<'PY'\nimport json\nfrom datetime import datetime, timezone\nfrom\
+      \ pathlib import Path\n\nrun_dir = Path(\"/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202620\"\
+      )\nreports_dir = run_dir / \"reports\"\nstage_files = {\n    \"stage1\": run_dir\
+      \ / \"stage1\" / \"summary\" / \"stage1_summary.json\",\n    \"stage2\": run_dir\
+      \ / \"stage2\" / \"summary\" / \"stage2_summary.json\",\n    \"stage2\": run_dir\
+      \ / \"stage2\" / \"summary\" / \"stage2_summary.json\",\n}\n\nfinal_payload\
+      \ = {\n    \"generated_at\": datetime.now(timezone.utc).isoformat(),\n}\n\n\
+      for stage, path in stage_files.items():\n    if not path.is_file():\n      \
+      \  continue\n    data = json.loads(path.read_text(encoding=\"utf-8\"))\n   \
+      \ final_payload[stage] = data\n    (reports_dir / path.name).write_text(json.dumps(data,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\nsummary_path = reports_dir\
+      \ / \"final_summary.json\"\nsummary_path.write_text(json.dumps(final_payload,\
+      \ indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\ndef fmt(value):\n  \
+      \  if value is None:\n        return \"N/A\"\n    try:\n        return f\"{value:.4f}\"\
+      \n    except (TypeError, ValueError):\n        return str(value)\n\nlines =\
+      \ [\"# Generalization Sweep Summary\", \"\"]\nlines.append(f\"- Generated at\
+      \ {final_payload['generated_at']}\")\nlines.append(\"\")\nstage1 = final_payload.get(\"\
+      stage1\", {})\nentries1 = stage1.get(\"entries\", [])\nif entries1:\n    lines.extend([\"\
+      ## Stage 1 – Fast Screening\", \"\", \"| Rank | Model | Seed | MAE | R2 | RMSE\
+      \ |\", \"|---|---|---|---|---|---|\"])\n    for entry in entries1:\n       \
+      \ lines.append(\n            f\"| {entry.get('rank', '')} | {entry.get('arch',\
+      \ '')} | {entry.get('seed', '')} | {fmt(entry.get('mae'))} | {fmt(entry.get('r2_score'))}\
+      \ | {fmt(entry.get('rmse'))} |\"\n        )\n    lines.append(\"\")\nstage2\
+      \ = final_payload.get(\"stage2\", {})\nentries2 = stage2.get(\"entries\", [])\n\
+      if entries2:\n    lines.extend([\"## Stage 2 – Stability (mean +/- std)\", \"\
+      \", \"| Rank | Model | Seeds | MAE | R2 | RMSE |\", \"|---|---|---|---|---|---|\"\
+      ])\n    for entry in entries2:\n        mae = f\"{fmt(entry.get('mae_mean'))}\
+      \ +/- {fmt(entry.get('mae_std'))}\"\n        r2 = f\"{fmt(entry.get('r2_mean'))}\
+      \ +/- {fmt(entry.get('r2_std'))}\"\n        rmse_mean = entry.get(\"rmse_mean\"\
+      )\n        rmse_std = entry.get(\"rmse_std\")\n        rmse = \"N/A\"\n    \
+      \    if rmse_mean is not None:\n            rmse = f\"{fmt(rmse_mean)} +/- {fmt(rmse_std)}\"\
+      \n        lines.append(\n            f\"| {entry.get('rank', '')} | {entry.get('arch',\
+      \ '')} | {entry.get('num_seeds', '')} | {mae} | {r2} | {rmse} |\"\n        )\n\
+      \    lines.append(\"\")\n\n(reports_dir / \"final_summary.md\").write_text(\"\
+      \\n\".join(lines), encoding=\"utf-8\")\nPY\n"
+  resources: []
+  log: /home/cheng/workspace/cpetx_workspace/cpet_former/logs/collect-reports.log
+  when:
+    value: true
+    resolved: true
+  status: completed
+  times:
+    started_at: '2025-11-01T12:27:22Z'
+    finished_at: '2025-11-01T12:27:22Z'
+    updated_at: '2025-11-01T12:27:22Z'
+    duration_seconds: 0.0

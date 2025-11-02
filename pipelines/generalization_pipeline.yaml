@@ -1,0 +1,528 @@
+metadata:
+  name: "cpetformer_generalization_screen"
+  vars:
+    RUNS_DIR: "{EXPERIMENT_HOME}/sota_generalization"
+    RUN_DIR: "{RUNS_DIR}/{RUN_TS}"
+    BEST_DIR: "{RUNS_DIR}/best"
+    rank_scan_all: "false"
+
+    model_list: "cpet_former_dann_regression cpet_former_mixstyle cpet_former_center_aware_mixstyle cpet_former_prototype_align cpet_former_center_invariant_layer_norm cpet_former_center_adaptive_adapter cpet_former_stochastic_router cpet_former_consistency_regularized"
+    data_file: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset.h5"
+    subset_data_file: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_medium.h5"
+    stage1_data_file: "{subset_data_file}"
+    stage2_data_file: "{data_file}"
+
+    stage1_epochs: "40"
+    stage1_lr: "7e-5"
+    stage1_weight_decay: "1e-6"
+    stage1_grad_clip: "0.5"
+    stage1_batch: "48"
+    stage1_seed: "17"
+
+    stage2_epochs: "400"
+    stage2_lr: "4e-5"
+    stage2_weight_decay: "1e-6"
+    stage2_grad_clip: "0.5"
+    stage2_batch: "64"
+    stage2_seeds: "17 43 89"
+    stage2_top_k: "3"
+
+
+    # smoke test
+    # data_file: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5"
+    # subset_data_file: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5"
+
+    # stage1_epochs: "1"
+    # stage1_lr: "7e-5"
+    # stage1_weight_decay: "1e-6"
+    # stage1_grad_clip: "0.5"
+    # stage1_batch: "48"
+    # stage1_seed: "17"
+
+    # stage2_epochs: "1"
+    # stage2_lr: "4e-5"
+    # stage2_weight_decay: "1e-6"
+    # stage2_grad_clip: "0.5"
+    # stage2_batch: "64"
+    # stage2_seeds: "42 101"
+    # stage2_top_k: "3"
+  envs:
+    PYTHONUNBUFFERED: "1"
+    PYTHONPATH: "{EXPERIMENT_HOME}/src"
+    CPETX_PROJECT_ROOT: "{EXPERIMENT_HOME}"
+    CONFIGS_DIR: "{EXPERIMENT_HOME}/configs"
+
+steps:
+  - id: prepare-run
+    type: shell
+    description: "Initialise generalization sweep run directory."
+    vars:
+      STEP_DIR: "{RUN_DIR}/prepare-run"
+    command: |
+      set -euo pipefail
+      mkdir -p "{RUN_DIR}" "{RUN_DIR}/reports" "{STEP_DIR}"
+      echo "{model_list}" > "{STEP_DIR}/models.txt"
+
+  - id: stage1-train
+    type: shell
+    depends_on: [prepare-run]
+    description: "Stage 1 – fast screening (single seed, short epochs)."
+    vars:
+      STEP_DIR: "{RUN_DIR}/stage1"
+    command: |
+      set -euo pipefail
+      mkdir -p "{STEP_DIR}"
+      DATA_FILE="{stage1_data_file}"
+      if [ ! -f "${DATA_FILE}" ]; then
+        echo "[stage1] data file ${DATA_FILE} not found."
+        exit 1
+      fi
+      read -r MODELS < "{RUN_DIR}/prepare-run/models.txt"
+      for ARCH in ${MODELS}; do
+        [ -z "${ARCH}" ] && continue
+        RUN_ROOT="{STEP_DIR}/${ARCH}/seed_{stage1_seed}"
+        mkdir -p "${RUN_ROOT}/artifacts" "${RUN_ROOT}/logs"
+        COMBO="stage1_lr{stage1_lr}_wd{stage1_weight_decay}_clip{stage1_grad_clip}_seed{stage1_seed}"
+        echo "[stage1] Train ${ARCH} (seed {stage1_seed})"
+        WEIGHT_DECAY={stage1_weight_decay} GRAD_CLIP_MAX_NORM={stage1_grad_clip} \
+          PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+            --data-file "${DATA_FILE}" \
+            --conf {CONFIGS_DIR}/model \
+            --filter "^${ARCH}$" \
+            --run-dir "${RUN_ROOT}" \
+            --save-dir "${RUN_ROOT}/artifacts" \
+            --log-dir "${RUN_ROOT}/logs" \
+            --task-id "{TASK_ID}_${ARCH}_stage1" \
+            --num-epochs "{stage1_epochs}" \
+            --learning-rate "{stage1_lr}" \
+            --batch-size "{stage1_batch}" \
+            --seed "{stage1_seed}"
+        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py write-meta \
+            --run-root "${RUN_ROOT}" \
+            --arch "${ARCH}" \
+            --combo "${COMBO}" \
+            --learning-rate "{stage1_lr}" \
+            --weight-decay "{stage1_weight_decay}" \
+            --grad-clip "{stage1_grad_clip}" \
+            --stage "stage1"
+      done
+
+  - id: stage1-summary
+    type: shell
+    depends_on: [stage1-train]
+    description: "Aggregate Stage 1 metrics and choose candidates for Stage 2."
+    vars:
+      STEP_DIR: "{RUN_DIR}/stage1/summary"
+    command: |
+      set -euo pipefail
+      mkdir -p "{STEP_DIR}"
+      python - <<'PY'
+      import json
+      from datetime import datetime, timezone
+      from pathlib import Path
+
+      def load_metrics(run_root: Path, arch: str):
+          candidates = [
+              run_root / "artifacts" / arch / "results" / "test_final_results.json",
+              run_root / "artifacts" / "results" / "test_final_results.json",
+              run_root / "results" / "test_final_results.json",
+          ]
+          if run_root.is_dir():
+              for extra in run_root.glob("**/test_final_results.json"):
+                  if extra not in candidates:
+                      candidates.append(extra)
+          for candidate in candidates:
+              if not candidate.is_file():
+                  continue
+              try:
+                  payload = json.loads(candidate.read_text(encoding="utf-8"))
+              except json.JSONDecodeError:
+                  continue
+              metrics = payload.get("test_metrics", payload)
+              try:
+                  mae = float(metrics["mae"])
+                  r2 = float(metrics["r2_score"])
+              except (KeyError, TypeError, ValueError):
+                  continue
+              rmse_val = metrics.get("rmse")
+              rmse = float(rmse_val) if rmse_val is not None else None
+              result_dir = candidate.parent
+              center_metrics = None
+              center_path = None
+              center_candidate = result_dir / "test_center_metrics.json"
+              if not center_candidate.is_file():
+                  nested_center = sorted(result_dir.glob("*/all/results/test_center_metrics.json"))
+                  if nested_center:
+                      center_candidate = nested_center[0]
+              if center_candidate.is_file():
+                  try:
+                      center_payload = json.loads(center_candidate.read_text(encoding="utf-8"))
+                      center_metrics = center_payload.get("metrics", center_payload)
+                      center_path = str(center_candidate)
+                  except json.JSONDecodeError:
+                      center_metrics = None
+                      center_path = None
+              return {
+                  "mae": mae,
+                  "r2_score": r2,
+                  "rmse": rmse,
+                  "eval_path": str(result_dir),
+                  "center_metrics": center_metrics,
+                  "center_metrics_path": center_path,
+              }
+          return None
+
+      run_dir = Path("{RUN_DIR}")
+      stage_dir = run_dir / "stage1"
+      entries = []
+      for arch_dir in sorted(stage_dir.glob("*")):
+          if not arch_dir.is_dir():
+              continue
+          arch = arch_dir.name
+          best = None
+          best_seed = ""
+          for seed_dir in sorted(arch_dir.glob("seed_*")):
+              metrics = load_metrics(seed_dir, arch)
+              if not metrics:
+                  continue
+              seed = seed_dir.name.replace("seed_", "")
+              entry = {
+                  "arch": arch,
+                  "seed": seed,
+                  "mae": metrics["mae"],
+                  "r2_score": metrics["r2_score"],
+                  "rmse": metrics["rmse"],
+                  "run_dir": str(seed_dir),
+                  "eval_path": metrics["eval_path"],
+                  "center_metrics": metrics.get("center_metrics"),
+                  "center_metrics_path": metrics.get("center_metrics_path"),
+              }
+              if best is None or metrics["mae"] < best["mae"] or (
+                  metrics["mae"] == best["mae"] and metrics["r2_score"] > best["r2_score"]
+              ):
+                  best = entry
+                  best_seed = seed
+          if best:
+              best["selected_seed"] = best_seed
+              entries.append(best)
+
+      entries.sort(key=lambda item: (item["mae"], -item["r2_score"]))
+      for rank, entry in enumerate(entries, start=1):
+          entry["rank"] = rank
+
+      summary = {
+          "stage": "stage1",
+          "generated_at": datetime.now(timezone.utc).isoformat(),
+          "top_k": int("{stage2_top_k}"),
+          "entries": entries,
+      }
+
+      summary_path = Path("{RUN_DIR}") / "stage1" / "summary" / "stage1_summary.json"
+      summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+
+      top_k = max(1, int("{stage2_top_k}"))
+      top_models = [entry["arch"] for entry in entries[:top_k]]
+      top_file = Path("{RUN_DIR}") / "stage1_top_models.txt"
+      top_file.write_text("\n".join(top_models), encoding="utf-8")
+      PY
+
+  - id: stage2-train
+    type: shell
+    depends_on: [stage1-summary]
+    description: "Stage 2 – full-length training with finalists."
+    vars:
+      STEP_DIR: "{RUN_DIR}/stage2"
+    command: |
+      set -euo pipefail
+      mkdir -p "{STEP_DIR}"
+      TOP_FILE="{RUN_DIR}/stage1_top_models.txt"
+      if [ ! -s "${TOP_FILE}" ]; then
+        echo "[stage2] No Stage 1 top models. Skipping Stage 2."
+      else
+        MODELS="$(tr '\n' ' ' < "${TOP_FILE}")"
+        DATA_FILE="{stage2_data_file}"
+        if [ ! -f "${DATA_FILE}" ]; then
+          echo "[stage2] data file ${DATA_FILE} not found."
+          exit 1
+        fi
+        for ARCH in ${MODELS}; do
+          [ -z "${ARCH}" ] && continue
+          for SEED in {stage2_seeds}; do
+            RUN_ROOT="{STEP_DIR}/${ARCH}/seed_${SEED}"
+            mkdir -p "${RUN_ROOT}/artifacts" "${RUN_ROOT}/logs"
+            COMBO="stage2_lr{stage2_lr}_wd{stage2_weight_decay}_clip{stage2_grad_clip}_seed${SEED}"
+            echo "[stage2] Train ${ARCH} (seed ${SEED})"
+            WEIGHT_DECAY={stage2_weight_decay} GRAD_CLIP_MAX_NORM={stage2_grad_clip} \
+              PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+                --data-file "${DATA_FILE}" \
+                --conf {CONFIGS_DIR}/model \
+                --filter "^${ARCH}$" \
+                --run-dir "${RUN_ROOT}" \
+                --save-dir "${RUN_ROOT}/artifacts" \
+                --log-dir "${RUN_ROOT}/logs" \
+                --task-id "{TASK_ID}_${ARCH}_stage2" \
+                --num-epochs "{stage2_epochs}" \
+                --learning-rate "{stage2_lr}" \
+                --batch-size "{stage2_batch}" \
+                --seed "${SEED}"
+            PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py write-meta \
+                --run-root "${RUN_ROOT}" \
+                --arch "${ARCH}" \
+                --combo "${COMBO}" \
+                --learning-rate "{stage2_lr}" \
+                --weight-decay "{stage2_weight_decay}" \
+                --grad-clip "{stage2_grad_clip}" \
+                --stage "stage2"
+          done
+        done
+      fi
+
+  - id: stage2-summary
+    type: shell
+    depends_on: [stage2-train]
+    description: "Aggregate Stage 3 metrics (mean ± std) for final ranking."
+    vars:
+      STEP_DIR: "{RUN_DIR}/stage2/summary"
+    command: |
+      set -euo pipefail
+      mkdir -p "{STEP_DIR}"
+      python - <<'PY'
+      import json
+      from datetime import datetime, timezone
+      from pathlib import Path
+      from statistics import mean, pstdev
+
+      def load_metrics(run_root: Path, arch: str):
+          candidates = [
+              run_root / "artifacts" / arch / "results" / "test_final_results.json",
+              run_root / "artifacts" / "results" / "test_final_results.json",
+              run_root / "results" / "test_final_results.json",
+          ]
+          if run_root.is_dir():
+              for extra in run_root.glob("**/test_final_results.json"):
+                  if extra not in candidates:
+                      candidates.append(extra)
+          for candidate in candidates:
+              if not candidate.is_file():
+                  continue
+              try:
+                  payload = json.loads(candidate.read_text(encoding="utf-8"))
+              except json.JSONDecodeError:
+                  continue
+              metrics = payload.get("test_metrics", payload)
+              try:
+                  mae = float(metrics["mae"])
+                  r2 = float(metrics["r2_score"])
+              except (KeyError, TypeError, ValueError):
+                  continue
+              rmse_val = metrics.get("rmse")
+              rmse = float(rmse_val) if rmse_val is not None else None
+              result_dir = candidate.parent
+              center_metrics = None
+              center_path = None
+              center_candidate = result_dir / "test_center_metrics.json"
+              if not center_candidate.is_file():
+                  nested_center = sorted(result_dir.glob("*/all/results/test_center_metrics.json"))
+                  if nested_center:
+                      center_candidate = nested_center[0]
+              if center_candidate.is_file():
+                  try:
+                      center_payload = json.loads(center_candidate.read_text(encoding="utf-8"))
+                      center_metrics = center_payload.get("metrics", center_payload)
+                      center_path = str(center_candidate)
+                  except json.JSONDecodeError:
+                      center_metrics = None
+                      center_path = None
+              return {
+                  "mae": mae,
+                  "r2_score": r2,
+                  "rmse": rmse,
+                  "eval_path": str(result_dir),
+                  "center_metrics": center_metrics,
+                  "center_metrics_path": center_path,
+              }
+          return None
+
+      run_dir = Path("{RUN_DIR}")
+      stage_dir = run_dir / "stage2"
+      aggregated = []
+      for arch_dir in sorted(stage_dir.glob("*")):
+          if not arch_dir.is_dir():
+              continue
+          arch = arch_dir.name
+          seeds = []
+          for seed_dir in sorted(arch_dir.glob("seed_*")):
+              metrics = load_metrics(seed_dir, arch)
+              if not metrics:
+                  continue
+              seed = seed_dir.name.replace("seed_", "")
+              seeds.append(
+                  {
+                      "seed": seed,
+                      "mae": metrics["mae"],
+                      "r2_score": metrics["r2_score"],
+                      "rmse": metrics["rmse"],
+                      "run_dir": str(seed_dir),
+                      "eval_path": metrics["eval_path"],
+                      "center_metrics": metrics.get("center_metrics"),
+                      "center_metrics_path": metrics.get("center_metrics_path"),
+                  }
+              )
+          if not seeds:
+              continue
+          mae_values = [item["mae"] for item in seeds]
+          r2_values = [item["r2_score"] for item in seeds]
+          rmse_values = [item["rmse"] for item in seeds if item["rmse"] is not None]
+
+          def compute(values):
+              mean_val = mean(values)
+              std_val = pstdev(values) if len(values) > 1 else 0.0
+              return mean_val, std_val
+
+          mae_mean, mae_std = compute(mae_values)
+          r2_mean, r2_std = compute(r2_values)
+          if rmse_values:
+              rmse_mean, rmse_std = compute(rmse_values)
+          else:
+              rmse_mean = rmse_std = None
+
+          center_summary = {}
+          per_center_accumulator = {}
+          for item in seeds:
+              cm = item.get("center_metrics")
+              if not isinstance(cm, dict):
+                  continue
+              per_center = cm.get("per_center") if isinstance(cm.get("per_center"), dict) else None
+              if not per_center:
+                  continue
+              for center_name, stats in per_center.items():
+                  if not isinstance(stats, dict):
+                      continue
+                  bucket = per_center_accumulator.setdefault(center_name, {})
+                  for key, value in stats.items():
+                      if key == "num_samples":
+                          bucket.setdefault("num_samples", 0)
+                          bucket["num_samples"] += int(value)
+                      else:
+                          try:
+                              bucket.setdefault(key, []).append(float(value))
+                          except (TypeError, ValueError):
+                              continue
+          if per_center_accumulator:
+              aggregate_per_center = {}
+              for center_name, stat_dict in per_center_accumulator.items():
+                  agg_entry = {}
+                  for key, value in stat_dict.items():
+                      if key == "num_samples":
+                          agg_entry[key] = value
+                      else:
+                          values = value
+                          if isinstance(values, list) and values:
+                              agg_entry[key] = sum(values) / len(values)
+                  aggregate_per_center[center_name] = agg_entry
+              center_summary["per_center"] = aggregate_per_center
+
+          aggregated.append(
+              {
+                  "arch": arch,
+                  "num_seeds": len(seeds),
+                  "mae_mean": mae_mean,
+                  "mae_std": mae_std,
+                  "r2_mean": r2_mean,
+                  "r2_std": r2_std,
+                  "rmse_mean": rmse_mean,
+                  "rmse_std": rmse_std,
+                  "seed_metrics": seeds,
+                  "center_metrics_summary": center_summary if center_summary else None,
+              }
+          )
+
+      aggregated.sort(key=lambda item: (item["mae_mean"], -item["r2_mean"]))
+      for rank, entry in enumerate(aggregated, start=1):
+          entry["rank"] = rank
+
+      summary = {
+          "stage": "stage2",
+          "generated_at": datetime.now(timezone.utc).isoformat(),
+          "entries": aggregated,
+      }
+
+      summary_path = Path("{RUN_DIR}") / "stage2" / "summary" / "stage2_summary.json"
+      summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+      PY
+
+  - id: collect-reports
+    type: shell
+    depends_on: [stage2-summary]
+    description: "Assemble stage summaries and emit final report."
+    vars:
+      STEP_DIR: "{RUN_DIR}/reports"
+    command: |
+      set -euo pipefail
+      mkdir -p "{STEP_DIR}"
+      python - <<'PY'
+      import json
+      from datetime import datetime, timezone
+      from pathlib import Path
+
+      run_dir = Path("{RUN_DIR}")
+      reports_dir = run_dir / "reports"
+      stage_files = {
+          "stage1": run_dir / "stage1" / "summary" / "stage1_summary.json",
+          "stage2": run_dir / "stage2" / "summary" / "stage2_summary.json",
+          "stage2": run_dir / "stage2" / "summary" / "stage2_summary.json",
+      }
+
+      final_payload = {
+          "generated_at": datetime.now(timezone.utc).isoformat(),
+      }
+
+      for stage, path in stage_files.items():
+          if not path.is_file():
+              continue
+          data = json.loads(path.read_text(encoding="utf-8"))
+          final_payload[stage] = data
+          (reports_dir / path.name).write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+      summary_path = reports_dir / "final_summary.json"
+      summary_path.write_text(json.dumps(final_payload, indent=2, ensure_ascii=False), encoding="utf-8")
+
+      def fmt(value):
+          if value is None:
+              return "N/A"
+          try:
+              return f"{value:.4f}"
+          except (TypeError, ValueError):
+              return str(value)
+
+      lines = ["# Generalization Sweep Summary", ""]
+      lines.append(f"- Generated at {final_payload['generated_at']}")
+      lines.append("")
+      stage1 = final_payload.get("stage1", {})
+      entries1 = stage1.get("entries", [])
+      if entries1:
+          lines.extend(["## Stage 1 – Fast Screening", "", "| Rank | Model | Seed | MAE | R2 | RMSE |", "|---|---|---|---|---|---|"])
+          for entry in entries1:
+              lines.append(
+                  f"| {entry.get('rank', '')} | {entry.get('arch', '')} | {entry.get('seed', '')} | {fmt(entry.get('mae'))} | {fmt(entry.get('r2_score'))} | {fmt(entry.get('rmse'))} |"
+              )
+          lines.append("")
+      stage2 = final_payload.get("stage2", {})
+      entries2 = stage2.get("entries", [])
+      if entries2:
+          lines.extend(["## Stage 2 – Stability (mean +/- std)", "", "| Rank | Model | Seeds | MAE | R2 | RMSE |", "|---|---|---|---|---|---|"])
+          for entry in entries2:
+              mae = f"{fmt(entry.get('mae_mean'))} +/- {fmt(entry.get('mae_std'))}"
+              r2 = f"{fmt(entry.get('r2_mean'))} +/- {fmt(entry.get('r2_std'))}"
+              rmse_mean = entry.get("rmse_mean")
+              rmse_std = entry.get("rmse_std")
+              rmse = "N/A"
+              if rmse_mean is not None:
+                  rmse = f"{fmt(rmse_mean)} +/- {fmt(rmse_std)}"
+              lines.append(
+                  f"| {entry.get('rank', '')} | {entry.get('arch', '')} | {entry.get('num_seeds', '')} | {mae} | {r2} | {rmse} |"
+              )
+          lines.append("")
+
+      (reports_dir / "final_summary.md").write_text("\n".join(lines), encoding="utf-8")
+      PY

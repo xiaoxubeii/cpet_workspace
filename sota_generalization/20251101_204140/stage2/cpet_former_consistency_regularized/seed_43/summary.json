@@ -1,0 +1,31 @@
+{
+  "run_info": {
+    "result_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage2/cpet_former_consistency_regularized/seed_43/artifacts",
+    "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage2/cpet_former_consistency_regularized/seed_43",
+    "summary_time": "2025-11-01T21:23:45.342354",
+    "description": ""
+  },
+  "models": {
+    "cpet_former_consistency_regularized": {
+      "cpet_former_consistency_regularized": {
+        "model_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204140/stage2/cpet_former_consistency_regularized/seed_43/artifacts/cpet_former_consistency_regularized",
+        "metrics": {
+          "test_metrics": {
+            "mae": 0.8841010123581722,
+            "rmse": 1.4242605331094935,
+            "mse": 2.0285180661733384,
+            "correlation": 0.9187962341255962,
+            "r2_score": 0.842638023850691,
+            "mape": 7.134605575475707,
+            "num_samples": 1285
+          },
+          "num_samples": 1285,
+          "timestamp": "2025-11-01T21:23:45.233859"
+        },
+        "config_file": null,
+        "training_time": null
+      }
+    }
+  },
+  "overall_stats": {}
+}

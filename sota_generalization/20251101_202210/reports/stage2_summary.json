@@ -1,0 +1,69 @@
+{
+  "stage": "stage2",
+  "generated_at": "2025-11-01T12:22:54.925844+00:00",
+  "entries": [
+    {
+      "arch": "cpet_former_center_aware_mixstyle",
+      "num_seeds": 1,
+      "mae_mean": 10.564323980991658,
+      "mae_std": 0.0,
+      "r2_mean": -8.277981175416194,
+      "r2_std": 0.0,
+      "rmse_mean": 11.198610111338349,
+      "rmse_std": 0.0,
+      "seed_metrics": [
+        {
+          "seed": "42",
+          "mae": 10.564323980991658,
+          "r2_score": -8.277981175416194,
+          "rmse": 11.198610111338349,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202210/stage2/cpet_former_center_aware_mixstyle/seed_42",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202210/stage2/cpet_former_center_aware_mixstyle/seed_42/artifacts/cpet_former_center_aware_mixstyle/results"
+        }
+      ],
+      "rank": 1
+    },
+    {
+      "arch": "cpet_former_center_adaptive_adapter",
+      "num_seeds": 1,
+      "mae_mean": 11.174955227741828,
+      "mae_std": 0.0,
+      "r2_mean": -9.298467873119122,
+      "r2_std": 0.0,
+      "rmse_mean": 11.79841560511102,
+      "rmse_std": 0.0,
+      "seed_metrics": [
+        {
+          "seed": "42",
+          "mae": 11.174955227741828,
+          "r2_score": -9.298467873119122,
+          "rmse": 11.79841560511102,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202210/stage2/cpet_former_center_adaptive_adapter/seed_42",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202210/stage2/cpet_former_center_adaptive_adapter/seed_42/artifacts/cpet_former_center_adaptive_adapter/results"
+        }
+      ],
+      "rank": 2
+    },
+    {
+      "arch": "cpet_former_mixstyle",
+      "num_seeds": 1,
+      "mae_mean": 11.457222334696697,
+      "mae_std": 0.0,
+      "r2_mean": -9.72140414692615,
+      "r2_std": 0.0,
+      "rmse_mean": 12.038246023641957,
+      "rmse_std": 0.0,
+      "seed_metrics": [
+        {
+          "seed": "42",
+          "mae": 11.457222334696697,
+          "r2_score": -9.72140414692615,
+          "rmse": 12.038246023641957,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202210/stage2/cpet_former_mixstyle/seed_42",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_202210/stage2/cpet_former_mixstyle/seed_42/artifacts/cpet_former_mixstyle/results"
+        }
+      ],
+      "rank": 3
+    }
+  ]
+}

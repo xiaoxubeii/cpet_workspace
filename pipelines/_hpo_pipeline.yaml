@@ -102,7 +102,7 @@ steps:
           RUN_ROOT="{STEP_DIR}/${RUN_TAG}"
           mkdir -p "${RUN_ROOT}/artifacts" "${RUN_ROOT}/logs" "${RUN_ROOT}/results"
           echo "[full-train] ${ARCH_ID} :: ${RUN_TAG}"
-          WEIGHT_DECAY=${WD} GRAD_CLIP_MAX_NORM=${CLIP} PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+          if WEIGHT_DECAY=${WD} GRAD_CLIP_MAX_NORM=${CLIP} PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
             --data-file {full_data} \
             --conf {CONFIGS_DIR}/model \
             --filter "^${ARCH_ID}$" \
@@ -113,16 +113,20 @@ steps:
             --num-epochs {full_epochs} \
             --learning-rate "${LR}" \
             --batch-size {batch_size} \
-            --seed "${SEED}"
-          PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py write-meta \
-            --run-root "${RUN_ROOT}" \
-            --arch "${ARCH_ID}" \
-            --combo "${TAG}" \
-            --learning-rate "${LR}" \
-            --weight-decay "${WD}" \
-            --grad-clip "${CLIP}" \
-            --stage "full" \
-            --seed "${SEED}"
+            --seed "${SEED}"; then
+            PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py write-meta \
+              --run-root "${RUN_ROOT}" \
+              --arch "${ARCH_ID}" \
+              --combo "${TAG}" \
+              --learning-rate "${LR}" \
+              --weight-decay "${WD}" \
+              --grad-clip "${CLIP}" \
+              --stage "full" \
+              --seed "${SEED}"
+          else
+            echo "[full-train] ${ARCH_ID} :: ${RUN_TAG} failed, skipping to next seed" >&2
+            continue
+          fi
         done
       done < "{STEP_DIR}/candidates.txt"
 
@@ -140,7 +144,7 @@ steps:
         RUN_ROOT="{STEP_DIR}/${COMBO}"
         mkdir -p "${RUN_ROOT}/logs" "${RUN_ROOT}/results"
         echo "[full-eval] ${ARCH} :: ${COMBO}"
-        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model eval \
+        if PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model eval \
           --task-id "{TASK_ID}_${ARCH}_${COMBO}_full" \
           --conf {eval_conf_dir} \
           --data-file {full_data} \
@@ -148,15 +152,19 @@ steps:
           --run-dir "${RUN_ROOT}" \
           --save-dir "${RUN_ROOT}/results" \
           --log-dir "${RUN_ROOT}/logs" \
-          --checkpoints-path "${COMBO_DIR}/artifacts"
+          --checkpoints-path "${COMBO_DIR}/artifacts"; then
 
-        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py copy-meta \
-          --source-dir "${COMBO_DIR}" \
-          --run-root "${RUN_ROOT}"
-        if [ -d "{data_file_loco}" ]; then
-          LOCO_SUB="${RUN_ROOT}/loco"
-          mkdir -p "${LOCO_SUB}"
-          PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/aggregate_loco_metrics.py "${LOCO_SUB}" "${ARCH}" || true
+          PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/scripts/pipeline_tasks.py copy-meta \
+            --source-dir "${COMBO_DIR}" \
+            --run-root "${RUN_ROOT}"
+          if [ -d "{data_file_loco}" ]; then
+            LOCO_SUB="${RUN_ROOT}/loco"
+            mkdir -p "${LOCO_SUB}"
+            PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/aggregate_loco_metrics.py "${LOCO_SUB}" "${ARCH}" || true
+          fi
+        else
+          echo "[full-eval] ${ARCH} :: ${COMBO} failed, skipping evaluation summary" >&2
+          continue
         fi
       done
 

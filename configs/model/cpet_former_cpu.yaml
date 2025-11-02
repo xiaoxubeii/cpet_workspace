@@ -10,12 +10,6 @@ include:
 # Force CPU execution for environments without CUDA
 device: cpu
 
-# Light-touch tuning focused on routing + stability
-validation_frequency: 1
-weight_decay: ${WEIGHT_DECAY:1e-5}
-grad_clip_max_norm: ${GRAD_CLIP_MAX_NORM:1.0}
-
+# Disable LR scheduler during CPU-only evaluation to avoid checkpoint mismatch
 scheduler:
-  name: "cosine_with_warmup"
-  warmup_epochs: 5
-  min_lr: 1e-6
+  name: "none"

@@ -1,0 +1,111 @@
+center_mapping:
+  Institute_Name:
+    shanxi: 0
+    xuhui: 1
+    zhongshan: 2
+dataset_name: cpet
+use_swanlab: true
+project: vox_cpet
+save_dir: null
+checkpoints_path: null
+data_file_path: null
+test_only: false
+learning_rate: 5e-5
+weight_decay: 1e-6
+num_epochs: 50
+batch_size: 64
+grad_clip_max_norm: '0.5'
+validation_frequency: 1
+features_group: timeseries
+target_group: summary
+max_seq_len: 128
+device: cuda
+mixed_precision: true
+compile_model: true
+early_stopping:
+  enabled: true
+  patience: 15
+  min_delta: 1e-6
+checkpointing:
+  save_best_only: true
+  monitor: val_loss
+  mode: min
+  save_frequency: epoch
+logging:
+  log_level: INFO
+  log_to_file: true
+  log_dir: logs
+center_columns:
+- Institute_Name
+feature_columns:
+- Load_Phase
+- Age
+- Gender
+- Height_cm
+- Weight_kg
+- BP_Diast
+- BP_Syst
+- BR_pct
+- Bf
+- CHO_kcal_h
+- CO
+- EE_kcal_h
+- HR
+- METS
+- PetCO2
+- PetO2
+- Power_Load
+- RER
+- SpO2
+- VCO2
+- VE
+- VE_VCO2
+- VE_VO2
+- VO2
+- VO2_HR
+- VO2_kg
+- VT
+filter_conditions: null
+test_filter_conditions: null
+validation_filter_conditions: null
+filter_strategy:
+  filter_order:
+  - hr_max_ratio
+  - load_phase_filter
+scaler_config:
+  enable_feature_scaling: true
+  enable_target_scaling: true
+  feature_scaler_type: standard
+  target_scaler_type: standard
+model:
+  name: cpet_former_dann_regression
+  d_model: 256
+  n_heads: 8
+  n_layers: 4
+  d_ff: 1024
+  dropout: 0.1
+  max_seq_len: 256
+  use_gradient_checkpointing: true
+  num_domains: 3
+  domain_hidden_dim: 128
+  domain_dropout: 0.2
+  domain_temperature: 1.0
+  domain_loss_weight: 0.75
+  grl_lambda: 0.5
+  lambda_schedule: sigmoid
+  lambda_max: 1.0
+  lambda_min: 0.0
+  lambda_total_steps: 12000
+  lambda_warmup_steps: 500
+  lambda_sigmoid_gamma: 10.0
+target_columns:
+- VO2_kg_at_AT
+scheduler:
+  name: cosine_with_warmup
+  warmup_epochs: 5
+  min_lr: 1e-6
+_metadata:
+  generated_at: '2025-11-01T20:41:41.583612'
+  generated_by: ConfigManager
+  loaded_files:
+  - /home/cheng/workspace/cpetx_workspace/cpet_former/configs/model/cpet_former_dann_regression.yaml

@@ -119,6 +119,21 @@ def _load_eval_entries(meta_paths: Sequence[Path]) -> List[dict]:
         if mae is None or r2 is None:
             continue
         rmse = test_metrics.get("rmse")
+        center_metrics = None
+        center_metrics_path: Optional[str] = None
+        center_file = eval_file.parent / "test_center_metrics.json"
+        if not center_file.is_file():
+            nested_center = sorted(eval_dir.glob("*/all/results/test_center_metrics.json"))
+            if nested_center:
+                center_file = nested_center[0]
+        if center_file.is_file():
+            try:
+                center_payload = json.loads(center_file.read_text(encoding="utf-8"))
+                center_metrics = center_payload.get("metrics", center_payload)
+                center_metrics_path = str(center_file)
+            except json.JSONDecodeError:
+                center_metrics = None
+                center_metrics_path = None
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
         entries.append(
             {
@@ -132,6 +147,8 @@ def _load_eval_entries(meta_paths: Sequence[Path]) -> List[dict]:
                 "rmse": float(rmse) if rmse is not None else None,
                 "eval_path": str(eval_file.parent),
                 "timestamp": _now_iso(),
+                "center_metrics": center_metrics,
+                "center_metrics_path": center_metrics_path,
             }
         )
     return entries
@@ -345,12 +362,13 @@ def cmd_summarize_full(args: argparse.Namespace) -> None:
         "r2_score": best["r2_score"],
         "rmse": best.get("rmse"),
         "eval_path": best["eval_path"],
+        "center_metrics": best["center_metrics"],
+        "group_mean_mae": group_mean_mae,
+        "group_mean_r2_score": group_mean_r2,
+        "group_mean_rmse": group_mean_rmse,
+        "group_size": len(best_group_items),
         "generated_at": summary["generated_at"],
     }
-    best_payload["group_mean_mae"] = group_mean_mae
-    best_payload["group_mean_r2_score"] = group_mean_r2
-    best_payload["group_mean_rmse"] = group_mean_rmse
-    best_payload["group_size"] = len(best_group_items)
     (reports_dir / "best_model.json").write_text(json.dumps(best_payload, indent=2, ensure_ascii=False), encoding="utf-8")
 
     md_lines = ["# Full Training Results", "", "| Rank | Combo | MAE | R² |", "|---|---|---|---|"]

@@ -154,59 +154,66 @@ def main() -> None:
         task_id = f"optuna_{trial.number}"
         combo = f"lr{lr:.6g}_wd{wd:.6g}_clip{clip:.3g}"
 
-        _stream_run(
-            [
-                python_exec,
-                str(cpetx_model),
-                "train",
-                "--data-file",
-                str(subset_path),
-                "--conf",
-                str(model_conf),
-                "--filter",
-                arch_regex,
-                "--run-dir",
-                str(train_root),
-                "--save-dir",
-                str(train_root / "artifacts"),
-                "--log-dir",
-                str(train_root / "logs"),
-                "--task-id",
-                task_id,
-                "--num-epochs",
-                str(args.sprint_epochs),
-                "--learning-rate",
-                str(lr),
-                "--batch-size",
-                str(args.batch_size),
-            ],
-            env=env,
-        )
+        try:
+            _stream_run(
+                [
+                    python_exec,
+                    str(cpetx_model),
+                    "train",
+                    "--data-file",
+                    str(subset_path),
+                    "--conf",
+                    str(model_conf),
+                    "--filter",
+                    arch_regex,
+                    "--run-dir",
+                    str(train_root),
+                    "--save-dir",
+                    str(train_root / "artifacts"),
+                    "--log-dir",
+                    str(train_root / "logs"),
+                    "--task-id",
+                    task_id,
+                    "--num-epochs",
+                    str(args.sprint_epochs),
+                    "--learning-rate",
+                    str(lr),
+                    "--batch-size",
+                    str(args.batch_size),
+                ],
+                env=env,
+            )
 
-        _stream_run(
-            [
-                python_exec,
-                str(cpetx_model),
-                "eval",
-                "--task-id",
-                task_id,
-                "--conf",
-                str(eval_conf),
-                "--data-file",
-                str(full_path),
-                "--filter",
-                arch_regex,
-                "--run-dir",
-                str(eval_root),
-                "--save-dir",
-                str(eval_root / "results"),
-                "--log-dir",
-                str(eval_root / "logs"),
-                "--checkpoints-path",
-                str(train_root / "artifacts"),
-            ],
-            env=env,
-        )
+            _stream_run(
+                [
+                    python_exec,
+                    str(cpetx_model),
+                    "eval",
+                    "--task-id",
+                    task_id,
+                    "--conf",
+                    str(eval_conf),
+                    "--data-file",
+                    str(full_path),
+                    "--filter",
+                    arch_regex,
+                    "--run-dir",
+                    str(eval_root),
+                    "--save-dir",
+                    str(eval_root / "results"),
+                    "--log-dir",
+                    str(eval_root / "logs"),
+                    "--checkpoints-path",
+                    str(train_root / "artifacts"),
+                ],
+                env=env,
+            )
+        except RuntimeError as error:
+            print(f"[hpo] Trial {trial.number} failed: {error}")
+            trial.set_user_attr("status", "failed")
+            trial.set_user_attr("error", str(error))
+            trial.report(float("inf"), step=1)
+            return float("inf")
 
         metrics = _extract_metrics(eval_root)
         mae = metrics.get("mae", float("inf"))
@@ -271,4 +278,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

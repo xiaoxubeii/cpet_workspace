@@ -1,0 +1,140 @@
+{
+  "stage": "stage2",
+  "generated_at": "2025-11-01T12:40:51.952328+00:00",
+  "entries": [
+    {
+      "arch": "cpet_former",
+      "num_seeds": 2,
+      "mae_mean": 11.84860671151143,
+      "mae_std": 0.45629723519086784,
+      "r2_mean": -10.43402400984742,
+      "r2_std": 0.7499214176736579,
+      "rmse_mean": 12.425189800127253,
+      "rmse_std": 0.4079035567444107,
+      "seed_metrics": [
+        {
+          "seed": "101",
+          "mae": 12.304903946702296,
+          "r2_score": -11.183945427521078,
+          "rmse": 12.833093356871663,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204038/stage2/cpet_former/seed_101",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204038/stage2/cpet_former/seed_101/artifacts/cpet_former/results",
+          "center_metrics": {
+            "per_center": {
+              "shanxi": {
+                "mae": 11.49197195707397,
+                "rmse": 11.790577099524494,
+                "mse": 139.01770833983144,
+                "mape": 93.29331728919476,
+                "r2_score": -17.588759258942098,
+                "correlation": 0.4320766022176849,
+                "num_samples": 88
+              },
+              "xuhui": {
+                "mae": 13.644483485221862,
+                "rmse": 14.572733189437312,
+                "mse": 212.36455261052777,
+                "mape": 93.78962126900167,
+                "r2_score": -7.284108544758624,
+                "correlation": -0.2489654189098359,
+                "num_samples": 25
+              },
+              "zhongshan": {
+                "mae": 14.543052571661333,
+                "rmse": 15.08174766483043,
+                "mse": 227.45911262561813,
+                "mape": 94.66598178722795,
+                "r2_score": -12.967774012885396,
+                "correlation": 0.20571336642450216,
+                "num_samples": 17
+              }
+            },
+            "macro": {
+              "rmse": 13.815019317930746,
+              "mae": 13.226502671319055
+            },
+            "rmse_gap": 3.2911705653059364
+          },
+          "center_metrics_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204038/stage2/cpet_former/seed_101/artifacts/cpet_former/results/test_center_metrics.json"
+        },
+        {
+          "seed": "42",
+          "mae": 11.39230947632056,
+          "r2_score": -9.684102592173762,
+          "rmse": 12.017286243382841,
+          "run_dir": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204038/stage2/cpet_former/seed_42",
+          "eval_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204038/stage2/cpet_former/seed_42/artifacts/cpet_former/results",
+          "center_metrics": {
+            "per_center": {
+              "shanxi": {
+                "mae": 10.526288433508439,
+                "rmse": 10.900784464612999,
+                "mse": 118.82710194394808,
+                "mape": 84.68616876432233,
+                "r2_score": -14.888971396897505,
+                "correlation": -0.4377011739664407,
+                "num_samples": 88
+              },
+              "xuhui": {
+                "mae": 12.783807024955749,
+                "rmse": 13.806613379909832,
+                "mse": 190.62257302230518,
+                "mape": 86.5507937781171,
+                "r2_score": -6.4359777400989335,
+                "correlation": -0.4266633911328397,
+                "num_samples": 25
+              },
+              "zhongshan": {
+                "mae": 13.828922008766847,
+                "rmse": 14.454029823947828,
+                "mse": 208.91897815157324,
+                "mape": 89.31291069822484,
+                "r2_score": -11.82926430222719,
+                "correlation": -0.5640413366969507,
+                "num_samples": 17
+              }
+            },
+            "macro": {
+              "rmse": 13.053809222823553,
+              "mae": 12.379672489077011
+            },
+            "rmse_gap": 3.553245359334829
+          },
+          "center_metrics_path": "/home/cheng/workspace/cpetx_workspace/cpet_former/sota_generalization/20251101_204038/stage2/cpet_former/seed_42/artifacts/cpet_former/results/test_center_metrics.json"
+        }
+      ],
+      "center_metrics_summary": {
+        "per_center": {
+          "shanxi": {
+            "mae": 11.009130195291204,
+            "rmse": 11.345680782068747,
+            "mse": 128.92240514188975,
+            "mape": 88.98974302675855,
+            "r2_score": -16.2388653279198,
+            "correlation": -0.002812285874377901,
+            "num_samples": 176
+          },
+          "xuhui": {
+            "mae": 13.214145255088805,
+            "rmse": 14.189673284673571,
+            "mse": 201.49356281641647,
+            "mape": 90.17020752355938,
+            "r2_score": -6.860043142428779,
+            "correlation": -0.3378144050213378,
+            "num_samples": 50
+          },
+          "zhongshan": {
+            "mae": 14.18598729021409,
+            "rmse": 14.76788874438913,
+            "mse": 218.18904538859567,
+            "mape": 91.98944624272639,
+            "r2_score": -12.398519157556294,
+            "correlation": -0.17916398513622425,
+            "num_samples": 34
+          }
+        }
+      },
+      "rank": 1
+    }
+  ]
+}

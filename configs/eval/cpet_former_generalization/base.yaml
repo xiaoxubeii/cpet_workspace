@@ -1,0 +1,4 @@
+# Shared evaluation settings for CPETFormer generalization models
+
+include:
+  - "${CONFIGS_DIR}/common/eval/all.yaml"

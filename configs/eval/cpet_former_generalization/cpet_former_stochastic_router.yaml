@@ -1,0 +1,5 @@
+# Evaluation config for stochastic router variant
+
+include:
+  - "${CONFIGS_DIR}/model/cpet_former_stochastic_router.yaml"
+  - "./base.yaml"

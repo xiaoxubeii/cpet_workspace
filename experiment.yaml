@@ -1,0 +1,472 @@
+metadata:
+  name: "cpaformer_transformer_suite"
+  vars:
+    experiment_name: "cpaformer_transformer_suite"
+    data_file: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset.h5"
+    data_file_loco: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_loco"
+    CONFIGS_DIR: "{EXPERIMENT_HOME}/configs"
+    RUNS_DIR: "{EXPERIMENT_HOME}/runs"
+    RUN_DIR: "{RUNS_DIR}/{experiment_name}/{RUN_TS}"
+    train_epochs: "1"
+    learning_rate: "5e-4"
+    batch_size: "64"
+    run_mode_single: "1"
+    run_mode_sweep: ""
+    single_arch: "cpa_former_v1_mtl"
+    arch_list: "cpa_former_v1_mtl cpa_v2_conv cpa_v2_deep padst tpt pgt get"
+    arch_step3: "cpa_former_center_film cpa_former_v1 cpa_former_v1_mtl"
+    lr_grid: "5e-5 2e-5"
+    wd_grid: "1e-6 1e-5 1e-4"
+    grad_clip_grid: "0.5 1.0"
+    tuned_arch: "cpa_former_light_tuned"
+    train_epochs_sprint: "8"
+    data_file_subset: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_quick.h5"
+    tuned_sets: "5e-5,1e-4,0.5;5e-5,1e-6,1.0;5e-5,1e-5,0.5"
+    head_weight_sets: "1.4,1.2,1.0;1.5,1.3,1.0;1.6,1.4,0.9"
+
+    data_file_ssl: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_ssl.h5"
+
+    data_file_small: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_small.h5"
+    data_file_medium: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_medium.h5"
+
+  envs:
+    PYTHONUNBUFFERED: "1"
+    PYTHONPATH: "{EXPERIMENT_HOME}/src"
+    CPETX_PROJECT_ROOT: "{EXPERIMENT_HOME}"
+    CONFIGS_DIR: "{EXPERIMENT_HOME}/configs"
+
+resources:
+  - source: "/home/cheng/workspace/vox_cpet/template/vo2_at/configs"
+    target: "configs"
+    method: "symlink"
+  - source: "/home/cheng/workspace/vox_cpet/vox_cpet"
+    target: "src/vox_cpet"
+    method: "symlink"
+
+steps:
+  - id: train-single
+    type: shell
+    when: "{run_mode_single}"
+    description: "Train a single architecture variant"
+    vars:
+      RUN_DIR: "{RUNS_DIR}/{TASK_ID}/{RUN_TS}"
+    command: |
+      set -e
+      ARCH="{single_arch}"
+      TRAIN_SUB="{RUN_DIR}/train_${{ARCH}}"
+      mkdir -p "${{TRAIN_SUB}}/artifacts" "${{TRAIN_SUB}}/logs" "${{TRAIN_SUB}}/results"
+      PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+        --data-file {data_file} \
+        --conf {CONFIGS_DIR}/model \
+        --filter "^${{ARCH}}$" \
+        --run-dir "${{TRAIN_SUB}}" \
+        --save-dir "${{TRAIN_SUB}}/artifacts" \
+        --log-dir "${{TRAIN_SUB}}/logs" \
+        --task-id "{TASK_ID}_${{ARCH}}" \
+        --num-epochs {train_epochs} \
+        --learning-rate {learning_rate} \
+        --batch-size {batch_size}
+
+  - id: eval-single
+    type: shell
+    depends_on: [train-single]
+    when: "{run_mode_single}"
+    description: "Evaluate a single architecture variant"
+    vars:
+      RUN_DIR: "{RUNS_DIR}/{TASK_ID}/{RUN_TS}"
+    command: |
+      set -e
+      ARCH="{single_arch}"
+      TRAIN_SUB="{RUN_DIR}/train_${{ARCH}}"
+      EVAL_SUB="{RUN_DIR}/eval_${{ARCH}}"
+      mkdir -p "${{EVAL_SUB}}/logs" "${{EVAL_SUB}}/results"
+      PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model eval \
+        --task-id "{TASK_ID}_${{ARCH}}" \
+        --conf {CONFIGS_DIR}/eval \
+        --data-file {data_file} \
+        --filter "^${{ARCH}}$" \
+        --run-dir "${{EVAL_SUB}}" \
+        --save-dir "${{EVAL_SUB}}/results" \
+        --log-dir "${{EVAL_SUB}}/logs" \
+        --checkpoints-path "${{TRAIN_SUB}}/artifacts"
+
+  - id: train-sweep
+    type: shell
+    when: "{run_mode_sweep}"
+    description: "Train architecture variants"
+    vars:
+      RUN_DIR: "{RUNS_DIR}/{TASK_ID}/{RUN_TS}"
+    command: |
+      set -e
+      for ARCH in {arch_list}; do
+        echo "== Train $ARCH =="
+        TRAIN_SUB="{RUN_DIR}/train_${{ARCH}}"
+        mkdir -p "${{TRAIN_SUB}}/artifacts" "${{TRAIN_SUB}}/logs" "${{TRAIN_SUB}}/results"
+        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+          --data-file {data_file} \
+          --conf {CONFIGS_DIR}/model/arch \
+          --filter "^${{ARCH}}$" \
+          --run-dir "${{TRAIN_SUB}}" \
+          --save-dir "${{TRAIN_SUB}}/artifacts" \
+          --log-dir "${{TRAIN_SUB}}/logs" \
+          --task-id "{TASK_ID}_${{ARCH}}" \
+          --num-epochs {train_epochs} \
+          --learning-rate {learning_rate} \
+          --batch-size {batch_size}
+      done
+
+  - id: eval-sweep
+    type: shell
+    depends_on: [train-sweep]
+    when: "{run_mode_sweep}"
+    description: "Evaluate architecture variants"
+    vars:
+      RUN_DIR: "{RUNS_DIR}/{TASK_ID}/{RUN_TS}"
+    command: |
+      set -e
+      for ARCH in {arch_list}; do
+        echo "== Eval $ARCH =="
+        TRAIN_SUB="{RUN_DIR}/train_${{ARCH}}"
+        EVAL_SUB="{RUN_DIR}/eval_${{ARCH}}"
+        mkdir -p "${{EVAL_SUB}}/results"
+        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model eval \
+          --task-id "{TASK_ID}_${{ARCH}}" \
+          --conf {CONFIGS_DIR}/eval \
+          --data-file {data_file} \
+          --filter "^${{ARCH}}$" \
+          --run-dir "${{EVAL_SUB}}" \
+          --save-dir "${{EVAL_SUB}}/results" \
+          --log-dir "${{EVAL_SUB}}/logs" \
+          --checkpoints-path "${{TRAIN_SUB}}/artifacts"
+      done
+
+  - id: mixed-cv-template
+    type: shell
+    when: ""
+    description: "Template – Mixed CV training/evaluation pipeline"
+    vars:
+      RUN_DIR: "{RUNS_DIR}/{TASK_ID}/{RUN_TS}"
+      data_file: "{data_file}"
+      arch_list: ""
+    command: |
+      set -e
+      for ARCH in {arch_list}; do
+        echo "== Train $ARCH =="
+        TRAIN_SUB="{RUN_DIR}/train_${{ARCH}}"
+        mkdir -p "${{TRAIN_SUB}}/artifacts" "${{TRAIN_SUB}}/logs" "${{TRAIN_SUB}}/results"
+        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+          --data-file {data_file} \
+          --conf {CONFIGS_DIR}/model \
+          --filter "^${{ARCH}}$" \
+          --run-dir "${{TRAIN_SUB}}" \
+          --save-dir "${{TRAIN_SUB}}/artifacts" \
+          --log-dir "${{TRAIN_SUB}}/logs" \
+          --task-id "{TASK_ID}_${{ARCH}}" \
+          --num-epochs {train_epochs} \
+          --learning-rate {learning_rate} \
+          --batch-size {batch_size}
+
+        # EVAL_SUB="{RUN_DIR}/eval_${{ARCH}}"
+        # mkdir -p "${{EVAL_SUB}}/logs" "${{EVAL_SUB}}/results"
+        # PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model eval \
+        #   --task-id "{TASK_ID}_${{ARCH}}" \
+        #   --conf {CONFIGS_DIR}/eval \
+        #   --data-file {data_file} \
+        #   --filter "^${{ARCH}}_all$" \
+        #   --run-dir "${{EVAL_SUB}}" \
+        #   --save-dir "${{EVAL_SUB}}/results" \
+        #   --log-dir "${{EVAL_SUB}}/logs" \
+        #   --checkpoints-path "${{TRAIN_SUB}}/artifacts"
+      done
+
+  - id: loco-template
+    type: shell
+    when: ""
+    description: "Template – CPAFormer LOCO training/evaluation pipeline"
+    vars:
+      RUN_DIR: "{RUNS_DIR}/{TASK_ID}/{RUN_TS}"
+    vars:
+      data_dir: "{data_file_loco}"
+      arch_list: ""
+    command: |
+      set -e
+      ARCH_LIST="{arch_list}"
+      DATA_DIR="{data_dir}"
+      LOCO_FILES=$(ls "${{DATA_DIR}}"/*.h5 | sort)
+
+      for ARCH in ${{ARCH_LIST}}; do
+        echo "== LOCO Train ${{ARCH}} =="
+        TRAIN_SUB_BASE="{RUN_DIR}/loco_train_${{ARCH}}"
+        EVAL_SUB_BASE="{RUN_DIR}/loco_eval_${{ARCH}}"
+        mkdir -p "${{TRAIN_SUB_BASE}}" "${{EVAL_SUB_BASE}}"
+
+        for LOCO_FILE in ${{LOCO_FILES}}; do
+          DATA_NAME="$(basename "${{LOCO_FILE}}" .h5)"
+          echo "  -- dataset ${{DATA_NAME}}"
+
+          TRAIN_SUB="${{TRAIN_SUB_BASE}}/${{DATA_NAME}}"
+          EVAL_SUB="${{EVAL_SUB_BASE}}/${{DATA_NAME}}"
+
+          mkdir -p "${{TRAIN_SUB}}/artifacts" "${{TRAIN_SUB}}/logs" "${{TRAIN_SUB}}/results"
+          PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+            --data-file "${{LOCO_FILE}}" \
+            --conf {CONFIGS_DIR}/model \
+            --filter "^${{ARCH}}$" \
+            --run-dir "${{TRAIN_SUB}}" \
+            --save-dir "${{TRAIN_SUB}}/artifacts" \
+            --log-dir "${{TRAIN_SUB}}/logs" \
+            --task-id "{TASK_ID}_loco_${{ARCH}}_${{DATA_NAME}}" \
+            --num-epochs {train_epochs} \
+            --learning-rate {learning_rate} \
+            --batch-size {batch_size}
+
+          # mkdir -p "${{EVAL_SUB}}/results" "${{EVAL_SUB}}/logs"
+          # PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model eval \
+          #   --task-id "{TASK_ID}_loco_${{ARCH}}_${{DATA_NAME}}" \
+          #   --conf {CONFIGS_DIR}/eval \
+          #   --data-file "${{LOCO_FILE}}" \
+          #   --filter "^${{ARCH}}_all$" \
+          #   --run-dir "${{EVAL_SUB}}" \
+          #   --save-dir "${{EVAL_SUB}}/results" \
+          #   --log-dir "${{EVAL_SUB}}/logs" \
+          #   --checkpoints-path "${{TRAIN_SUB}}/artifacts"
+        done
+
+        echo "== Aggregate LOCO metrics for ${{ARCH}} =="
+        PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/aggregate_loco_metrics.py "${{EVAL_SUB_BASE}}" "${{ARCH}}"
+      done
+
+  - id: tune-hparam-grid
+    type: shell
+    description: "CPAFormer light tuning – full data verify (3 selected combos)"
+    vars:
+      RUN_DIR: "{RUNS_DIR}/{TASK_ID}/{RUN_TS}"
+    command: |
+      set -e
+      ARCH="{tuned_arch}"
+      COMBOS="5e-5,1e-4,0.5 5e-5,1e-6,1.0 5e-5,1e-5,0.5"
+      for COMBO_DEF in $COMBOS; do
+        OLDIFS="$IFS"
+        IFS=','; set -- $COMBO_DEF; IFS="$OLDIFS"
+        LR="$1"
+        WD="$2"
+        CLIP="$3"
+        if [ -z "$LR" ] || [ -z "$WD" ] || [ -z "$CLIP" ]; then
+          echo "Invalid tuned combo definition: ${{COMBO_DEF}}" >&2
+          exit 1
+        fi
+        COMBO="lr${{LR}}_wd${{WD}}_clip${{CLIP}}"
+        RUN_SUB="{RUN_DIR}/${{COMBO}}"
+        TRAIN_SUB="${{RUN_SUB}}/train"
+        EVAL_SUB="${{RUN_SUB}}/eval"
+        mkdir -p "${{TRAIN_SUB}}/artifacts" "${{TRAIN_SUB}}/logs" "${{TRAIN_SUB}}/results"
+        mkdir -p "${{EVAL_SUB}}/logs" "${{EVAL_SUB}}/results"
+        echo "[Grid] ${{COMBO}}"
+        WEIGHT_DECAY=${{WD}} GRAD_CLIP_MAX_NORM=${{CLIP}} PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+          --data-file {data_file} \
+          --conf {CONFIGS_DIR}/model \
+          --filter "^${{ARCH}}$" \
+          --run-dir "${{TRAIN_SUB}}" \
+          --save-dir "${{TRAIN_SUB}}/artifacts" \
+          --log-dir "${{TRAIN_SUB}}/logs" \
+          --task-id "{TASK_ID}_${{ARCH}}_${{COMBO}}" \
+          --num-epochs {train_epochs} \
+          --learning-rate ${{LR}} \
+          --batch-size {batch_size}
+      done
+
+  - id: tune-head-loss-weights
+    type: shell
+    description: "CPAFormer phase-head loss reweighting sweep"
+    vars:
+      RUN_DIR: "{RUNS_DIR}/{TASK_ID}/{RUN_TS}"
+    command:
+      - bash
+      - -lc
+      - |
+          set -e
+          ARCH="{tuned_arch}"
+          BASE_CONF="{CONFIGS_DIR}/model/cpa_former_light_tuned.yaml"
+          IFS=';' read -ra WEIGHT_SETS <<< "{head_weight_sets}"
+          for SET in "${{WEIGHT_SETS[@]}}"; do
+            IFS=',' read -ra W <<< "${{SET}}"
+            if [ "${{#W[@]}}" -ne 3 ]; then
+              echo "Invalid head weight set: ${{SET}}" >&2
+              exit 1
+            fi
+            P0="${{W[0]}}"
+            P1="${{W[1]}}"
+            P2="${{W[2]}}"
+            TAG="p0${{P0}}_p1${{P1}}_p2${{P2}}"
+            RUN_SUB="{RUN_DIR}/${{TAG}}"
+            CONF_DIR="${{RUN_SUB}}/config"
+            TRAIN_SUB="${{RUN_SUB}}/train"
+            EVAL_SUB="${{RUN_SUB}}/eval"
+            mkdir -p "${{CONF_DIR}}" "${{TRAIN_SUB}}/artifacts" "${{TRAIN_SUB}}/logs" "${{TRAIN_SUB}}/results"
+            mkdir -p "${{EVAL_SUB}}/logs" "${{EVAL_SUB}}/results"
+            CONF_PATH="${{CONF_DIR}}/cpa_former_light_tuned.yaml"
+            BASE_CONF_PATH="${{BASE_CONF}}"
+            P0_VAL="${{P0}}"
+            P1_VAL="${{P1}}"
+            P2_VAL="${{P2}}"
+            CONF_PATH="${{CONF_PATH}}" BASE_CONF_PATH="${{BASE_CONF_PATH}}" P0_VAL="${{P0_VAL}}" P1_VAL="${{P1_VAL}}" P2_VAL="${{P2_VAL}}" python -c "import os, yaml; conf_path=os.environ['CONF_PATH']; base_conf=os.environ['BASE_CONF_PATH']; p0=float(os.environ['P0_VAL']); p1=float(os.environ['P1_VAL']); p2=float(os.environ['P2_VAL']); data={{'include':[base_conf],'head_loss_weights':{{'phase_0':p0,'phase_1':p1,'phase_2':p2}}}}; open(conf_path,'w').write(yaml.safe_dump(data, sort_keys=False))"
+            echo "[HeadWeights] ${{TAG}} -> ${{CONF_PATH}}"
+            WEIGHT_DECAY=1e-5 GRAD_CLIP_MAX_NORM=0.5 PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+              --data-file {data_file} \
+              --conf "${{CONF_DIR}}" \
+              --filter "^${{ARCH}}$" \
+              --run-dir "${{TRAIN_SUB}}" \
+              --save-dir "${{TRAIN_SUB}}/artifacts" \
+              --log-dir "${{TRAIN_SUB}}/logs" \
+              --task-id "{TASK_ID}_${{ARCH}}_${{TAG}}" \
+              --num-epochs {train_epochs} \
+              --batch-size {batch_size}
+          done
+
+  - id: tune-hparam-grid-sprint
+    type: shell
+    description: "CPAFormer light tuning (short-run) – quick grid sanity check"
+    vars:
+      RUN_DIR: "{RUNS_DIR}/{TASK_ID}/{RUN_TS}"
+    command: |
+      set -e
+      ARCH="{tuned_arch}"
+      DATA_FILE="{data_file_subset}"
+      if [ ! -f "${{DATA_FILE}}" ]; then
+        echo "[Sprint] subset data not found at ${{DATA_FILE}}, fallback to full dataset."
+        DATA_FILE="{data_file}"
+      fi
+      for LR in {lr_grid}; do
+        for WD in {wd_grid}; do
+          for CLIP in {grad_clip_grid}; do
+            COMBO="lr${{LR}}_wd${{WD}}_clip${{CLIP}}"
+            RUN_SUB="{RUN_DIR}/${{COMBO}}"
+            TRAIN_SUB="${{RUN_SUB}}/train"
+            EVAL_SUB="${{RUN_SUB}}/eval"
+            mkdir -p "${{TRAIN_SUB}}/artifacts" "${{TRAIN_SUB}}/logs" "${{TRAIN_SUB}}/results"
+            mkdir -p "${{EVAL_SUB}}/logs" "${{EVAL_SUB}}/results"
+            echo "[Sprint Grid] ${{COMBO}}"
+            WEIGHT_DECAY=${{WD}} GRAD_CLIP_MAX_NORM=${{CLIP}} PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+              --data-file "${{DATA_FILE}}" \
+              --conf {CONFIGS_DIR}/model \
+              --filter "^${{ARCH}}$" \
+              --run-dir "${{TRAIN_SUB}}" \
+              --save-dir "${{TRAIN_SUB}}/artifacts" \
+              --log-dir "${{TRAIN_SUB}}/logs" \
+              --task-id "{TASK_ID}_${{ARCH}}_${{COMBO}}_sprint" \
+              --num-epochs {train_epochs_sprint} \
+              --learning-rate ${{LR}} \
+              --batch-size {batch_size}
+          done
+        done
+      done
+
+  - id: step1-mixed-cv
+    extends: mixed-cv-template
+    override:
+      description: "Step 1 – Mixed CV training/evaluation"
+      envs:
+        WEIGHT_DECAY: 1e-5
+        GRAD_CLIP_MAX_NORM: 1.0
+      vars:
+        learnin_rate: 5e-5
+        RUN_DIR: "{RUNS_DIR}/step1/mixed_cv/{RUN_TS}"
+        arch_list: "svr lightgbm ridge random_forest cpet_former"
+      when: true
+
+  - id: explore-mixed-cv
+    extends: mixed-cv-template
+    override:
+      description: "Explore Mixed CV training/evaluation"
+      envs:
+        WEIGHT_DECAY: 5e-6
+        GRAD_CLIP_MAX_NORM: 0.3
+      vars:
+        learning_rate: 5e-5
+        RUN_DIR: "{RUNS_DIR}/explore/mixed_cv/{RUN_TS}"
+        arch_list: ""
+      when: true
+
+  - id: tune-cpetformer-center-film
+    extends: mixed-cv-template
+    override:
+      description: "Tune CPAFormer Center FILM"
+      envs:
+        WEIGHT_DECAY: 1e-6
+        GRAD_CLIP_MAX_NORM: 0.5
+      vars:
+        learning_rate: 5e-5
+        RUN_DIR: "{RUNS_DIR}/cpetformer-center-film/{RUN_TS}"
+        arch_list: "cpet_former_center_film"
+      when: true
+
+
+  - id: step2-mixed-cv
+    extends: mixed-cv-template
+    override:
+      description: "Step 2 – Mixed CV training/evaluation"
+      vars:
+        RUN_DIR: "{RUNS_DIR}/step2/mixed_cv/{RUN_TS}"
+        arch_list: "cpa_former cpa_former_center_film"
+      when: true
+
+  - id: step2-loco
+    extends: loco-template
+    override:
+      description: "Step 2 – LOCO training/evaluation"
+      vars:
+        RUN_DIR: "{RUNS_DIR}/step2/loco/{RUN_TS}"
+        arch_list: "cpa_former cpa_former_center_film"
+      when: true
+
+  - id: step3-loco
+    extends: loco-template
+    override:
+      description: "Step 3 – LOCO training/evaluation"
+      vars:
+        RUN_DIR: "{RUNS_DIR}/step3/loco/{RUN_TS}"
+        arch_list: "cpa_former_v1 cpa_former_v1_mtl cpa_former_v2_mtl"
+      when: true
+
+  - id: tune-shanxi
+    extends: mixed-cv-template
+    override:
+      description: "Tune Shanxi test"
+      env:
+        PRETRAINED_BACKBONE_PATH: "{pretrained_backbone_path}"
+      vars:
+        RUN_DIR: "{RUNS_DIR}/tune_shanxi/{RUN_TS}"
+        arch_list: "cpa_former_v2"
+        data_file: "/home/cheng/workspace/cpetx_workspace/generate_dataset/artifacts/cpet_dataset_loco/cpet_dataset_loco_shanxi_test.h5"
+      when: true
+  
+  - id: train-ssl
+    type: shell
+    description: "Self-Supervised pretraining (CPAFormer V2 SSL)"
+    envs:
+      CONFIGS_DIR: "{CONFIGS_DIR}"
+    vars:
+      data_file: "{data_file_ssl}"
+      RUN_DIR: "{RUNS_DIR}/ssl/{RUN_TS}"
+    command: |
+      set -e
+      mkdir -p "{RUN_DIR}/artifacts" "{RUN_DIR}/logs"
+      PYTHONPATH={EXPERIMENT_HOME}/src python {EXPERIMENT_HOME}/src/vox_cpet/cmd/cpetx-model train \
+        --data-file {data_file_ssl} \
+        --conf {CONFIGS_DIR}/model \
+        --filter "^cpa_former_v2_ssl$" \
+        --run-dir "{RUN_DIR}" \
+        --save-dir "{RUN_DIR}/artifacts" \
+        --log-dir "{RUN_DIR}/logs" \
+        --task-id "{TASK_ID}_ssl" \
+        --num-epochs {train_epochs} \
+        --learning-rate {learning_rate} \
+        --batch-size {batch_size}
+
+  - id: tune-cpaformer
+    extends: mixed-cv-template
+    override:
+      description: "Tune CPAFormer"
+      vars:
+        RUN_DIR: "{RUNS_DIR}/tune/{RUN_TS}"
+      when: true

@@ -61,3 +61,6 @@ logging:
   log_level: "INFO"
   log_to_file: true
   log_dir: "logs"
+
+center_columns:
+  - Institute_Name

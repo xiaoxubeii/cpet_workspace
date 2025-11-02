@@ -1,0 +1,27 @@
+include:
+  - "./cpet_former.yaml"
+  - "./base.yaml"
+
+model:
+  name: "cpet_former_dann_regression"
+  num_domains: 3                     # shanxi / xuhui / zhongshan
+  domain_hidden_dim: 128
+  domain_dropout: 0.2
+  domain_temperature: 1.0
+  domain_loss_weight: 0.75
+  grl_lambda: 0.5
+  lambda_schedule: "sigmoid"
+  lambda_max: 1.0
+  lambda_min: 0.0
+  lambda_total_steps: 12000
+  lambda_warmup_steps: 500
+  lambda_sigmoid_gamma: 10.0
+
+center_columns:
+  - Institute_Name
+
+center_mapping:
+  Institute_Name:
+    shanxi: 0
+    xuhui: 1
+    zhongshan: 2

@@ -1,0 +1,10 @@
+# CPETFormer MixStyle augmentation variant
+
+include:
+  - "./cpet_former_generalization_base.yaml"
+
+model:
+  name: "cpet_former_mixstyle"
+  mixstyle_p: 0.6
+  mixstyle_alpha: 0.3
+  mixstyle_eps: 1.0e-5
